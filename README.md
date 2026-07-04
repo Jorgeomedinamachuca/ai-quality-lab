@@ -1,5 +1,7 @@
 # AI Quality Lab
 
+[![AI Quality Lab Tests](https://github.com/Jorgeomedinamachuca/ai-quality-lab/actions/workflows/playwright-tests.yml/badge.svg)](https://github.com/Jorgeomedinamachuca/ai-quality-lab/actions/workflows/playwright-tests.yml)
+
 AI Quality Lab is a personal learning and research laboratory focused on the future of Quality Engineering in the age of Artificial Intelligence.
 
 The project explores how modern QA practices can be adapted to test AI-powered applications, chatbot behaviour and LLM-based features using tools such as Playwright, Python, Pytest and structured evaluation rubrics.
