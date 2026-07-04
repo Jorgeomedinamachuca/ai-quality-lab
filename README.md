@@ -178,3 +178,30 @@ pytest
 The long-term goal of AI Quality Lab is to become a personal reference point for AI Quality Engineering.
 
 The project is designed to position its author as a Quality Engineering professional capable of connecting established QA experience, automation, AI safety, security awareness and LLM evaluation in order to help teams build more reliable, safer and higher-quality AI products.
+
+## Experiments
+
+### Experiment 001 — Chatbot UI Smoke Test
+
+This experiment validates the basic UI contract of an AI-style chatbot interface using Playwright and Pytest.
+
+It demonstrates how a Quality Engineer can automate the minimum expected behaviour of a chatbot-style interface before introducing deeper LLM response quality evaluation.
+
+Covered behaviours:
+
+- chatbot page loading;
+- prompt input visibility;
+- send button visibility;
+- response panel visibility;
+- prompt submission;
+- deterministic response rendering;
+- empty prompt validation.
+
+Documentation:
+
+- [`docs/experiment_001_chatbot_ui_smoke_test.md`](docs/experiment_001_chatbot_ui_smoke_test.md)
+
+Related files:
+
+- [`demo/chatbot.html`](demo/chatbot.html)
+- [`tests/test_demo_chatbot_ui.py`](tests/test_demo_chatbot_ui.py)
