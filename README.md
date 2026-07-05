@@ -226,3 +226,30 @@ AI Quality Lab is organised around several practical research areas:
 |---|---|---|
 | Experiment 001 — Chatbot UI Smoke Test | Playwright automation for a controlled AI-style chatbot interface. | Active |
 | Experiment 002 — Agent Skill Quality Evaluation | QA evaluation of Claude-style reusable agent skills. | Active |
+
+### Experiment 003 — Prompt Injection Risk Baseline
+
+This experiment defines a structured baseline dataset for prompt injection and AI security testing.
+
+It demonstrates how a Quality Engineer can classify AI security risks, define expected safe behaviour and create observable failure signals before testing a real LLM-powered application.
+
+Covered areas:
+
+- instruction override
+- secret extraction
+- role manipulation
+- data leakage
+- policy bypass
+- jailbreak attempts
+- tool misuse
+- context exfiltration
+
+Documentation:
+
+- [`docs/experiment_003_prompt_injection_risk_baseline.md`](docs/experiment_003_prompt_injection_risk_baseline.md)
+
+Related files:
+
+- [`data/security_prompts.json`](data/security_prompts.json)
+- [`rubrics/prompt_injection_risk_rubric.md`](rubrics/prompt_injection_risk_rubric.md)
+- [`tests/test_prompt_injection_dataset.py`](tests/test_prompt_injection_dataset.py)
