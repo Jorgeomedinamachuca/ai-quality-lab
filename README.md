@@ -260,3 +260,12 @@ Each experiment should produce at least one tangible output:
 - good practices;
 - automation examples;
 - risk-based testing artefacts.
+---
+
+## Notice
+
+Copyright © 2026 Jorge Medina Machuca. All rights reserved.
+
+This repository is a personal portfolio and learning project. No permission is granted to copy, reuse, redistribute, commercially exploit or adapt its contents without explicit written permission.
+
+See [NOTICE.md](NOTICE.md).
