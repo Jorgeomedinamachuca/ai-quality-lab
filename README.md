@@ -205,3 +205,24 @@ Related files:
 
 - [`demo/chatbot.html`](demo/chatbot.html)
 - [`tests/test_demo_chatbot_ui.py`](tests/test_demo_chatbot_ui.py)
+
+## Lab Areas
+
+AI Quality Lab is organised around several practical research areas:
+
+| Area | Purpose |
+|---|---|
+| Playwright Automation | UI automation for AI-style applications and chatbot interfaces. |
+| Pytest Framework | Test structure, fixtures, assertions and repeatable automation. |
+| AI Evaluation | Evaluation of LLM-style responses, consistency, hallucination risks and response quality. |
+| Security Testing | Prompt injection, data leakage and unsafe instruction handling. |
+| Test Rubrics | Structured quality criteria for evaluating AI outputs and agent behaviour. |
+| Claude Skills / Agent Skills | Experiments with reusable agent skills, including structure, clarity, safety and testability. |
+| GitHub Actions | Continuous integration for automated test execution and quality evidence. |
+
+## Experiment Roadmap
+
+| Experiment | Focus | Status |
+|---|---|---|
+| Experiment 001 — Chatbot UI Smoke Test | Playwright automation for a controlled AI-style chatbot interface. | Active |
+| Experiment 002 — Agent Skill Quality Evaluation | QA evaluation of Claude-style reusable agent skills. | Active |
