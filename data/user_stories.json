@@ -1,0 +1,117 @@
+[
+  {
+    "id": "US-001",
+    "title": "Submit content for editorial review",
+    "persona": "Content Author",
+    "goal": "submit a draft for review",
+    "benefit": "an editor can approve content before publication",
+    "description": "As a content author, I want to submit a saved draft for editorial review so that an editor can check it before it is published.",
+    "acceptance_criteria": [
+      "Given a saved draft exists, when the author submits it for review, then the workflow status changes to Submitted for review.",
+      "Given the draft has no title, when the author submits it for review, then the system prevents submission and displays a validation message.",
+      "Given the draft has no body, when the author submits it for review, then the system prevents submission and displays a validation message."
+    ],
+    "business_rules": [
+      "Only saved drafts can be submitted for review.",
+      "A draft must have a title before review submission.",
+      "A draft must have body content before review submission."
+    ],
+    "edge_cases": [
+      "Draft title contains leading or trailing spaces.",
+      "Draft body contains only whitespace.",
+      "Author clicks submit multiple times."
+    ],
+    "negative_scenarios": [
+      "Submit without title.",
+      "Submit without body.",
+      "Submit an unsaved draft."
+    ],
+    "security_considerations": [
+      "The author should only submit drafts they own.",
+      "The workflow should not expose drafts belonging to other users."
+    ],
+    "testability_notes": [
+      "The workflow status should be visible or queryable.",
+      "Validation messages should be deterministic.",
+      "Role and ownership assumptions should be explicit."
+    ],
+    "risk_level": "high"
+  },
+  {
+    "id": "US-002",
+    "title": "Publish approved content",
+    "persona": "Editor",
+    "goal": "publish reviewed content",
+    "benefit": "approved content becomes available to the intended audience",
+    "description": "As an editor, I want to publish content that has been submitted for review so that approved content can be made available.",
+    "acceptance_criteria": [
+      "Given content is submitted for review, when an editor publishes it, then the workflow status changes to Published.",
+      "Given content is still in draft status, when an editor attempts to publish it, then the system prevents publication.",
+      "Given the user is an author, when they attempt to publish content, then the publish action is unavailable."
+    ],
+    "business_rules": [
+      "Only editors can publish content.",
+      "Content must be in Submitted for review status before publication.",
+      "Published content must have a title and body."
+    ],
+    "edge_cases": [
+      "Editor attempts to publish content immediately after status change.",
+      "Content is modified while under review.",
+      "Publish action is triggered twice."
+    ],
+    "negative_scenarios": [
+      "Author attempts to publish.",
+      "Editor attempts to publish draft content.",
+      "Editor attempts to publish content with missing required fields."
+    ],
+    "security_considerations": [
+      "Role-based access must prevent unauthorised publishing.",
+      "The system should not allow users to bypass review state transitions."
+    ],
+    "testability_notes": [
+      "Publish button state should be testable.",
+      "Workflow status should be verifiable after publication.",
+      "Role-based permission behaviour should be deterministic."
+    ],
+    "risk_level": "critical"
+  },
+  {
+    "id": "US-003",
+    "title": "Render content preview safely",
+    "persona": "Content Author",
+    "goal": "preview content before submission",
+    "benefit": "content can be reviewed before it enters the publishing workflow",
+    "description": "As a content author, I want to preview my content safely before submitting it for review so that I can check the final presentation.",
+    "acceptance_criteria": [
+      "Given the author enters normal text, when the preview is displayed, then the text appears in the preview panel.",
+      "Given the author enters script-like content, when the preview is displayed, then it is rendered as text and not executed.",
+      "Given content is empty, when preview is displayed, then the system shows an empty-state message."
+    ],
+    "business_rules": [
+      "Preview should not execute user-provided scripts.",
+      "Preview should represent the saved draft content.",
+      "Preview should not expose unpublished content to unauthorised users."
+    ],
+    "edge_cases": [
+      "Content includes HTML-like text.",
+      "Content includes special characters.",
+      "Content includes very long text."
+    ],
+    "negative_scenarios": [
+      "Preview script-like input.",
+      "Preview empty content.",
+      "Preview content belonging to another user."
+    ],
+    "security_considerations": [
+      "User-provided content must be rendered safely.",
+      "Preview must not create cross-site scripting risk.",
+      "Unpublished content should remain access-controlled."
+    ],
+    "testability_notes": [
+      "The preview output should be visible to UI tests.",
+      "Safe rendering can be checked by comparing text content and HTML content.",
+      "Script execution can be checked through a browser-side flag."
+    ],
+    "risk_level": "critical"
+  }
+]

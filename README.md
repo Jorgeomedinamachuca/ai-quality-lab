@@ -281,3 +281,32 @@ Related files:
 - [pages/publishing_workflow_page.py](pages/publishing_workflow_page.py)
 - [tests/test_secure_publishing_workflow.py](tests/test_secure_publishing_workflow.py)
 - [rubrics/publishing_workflow_quality_rubric.md](rubrics/publishing_workflow_quality_rubric.md)
+
+### Experiment 005 — Shift-Left Requirement Quality Gate
+
+This experiment demonstrates how Quality Engineering can shift left by evaluating user stories before implementation starts.
+
+It validates whether requirements include enough clarity, acceptance criteria, business rules, negative scenarios, edge cases, security considerations and testability notes to support development and automation.
+
+Covered areas:
+
+- requirement clarity
+- persona, goal and benefit
+- acceptance criteria
+- business rules
+- edge cases
+- negative scenarios
+- security considerations
+- testability notes
+- risk classification
+- AI-assisted development readiness
+
+Documentation:
+
+- [docs/experiment_005_shift_left_requirement_quality_gate.md](docs/experiment_005_shift_left_requirement_quality_gate.md)
+
+Related files:
+
+- [data/user_stories.json](data/user_stories.json)
+- [rubrics/shift_left_requirement_quality_rubric.md](rubrics/shift_left_requirement_quality_rubric.md)
+- [tests/test_shift_left_requirement_quality.py](tests/test_shift_left_requirement_quality.py)
