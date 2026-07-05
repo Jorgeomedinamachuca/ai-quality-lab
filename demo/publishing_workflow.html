@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Quality Lab - Secure Publishing Workflow</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    h1 {
+      margin-top: 0;
+      color: #f9fafb;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      margin-bottom: 24px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #475569;
+      background: #020617;
+      color: #e5e7eb;
+      padding: 12px;
+      font-size: 15px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 150px;
+    }
+
+    button {
+      margin-top: 16px;
+      margin-right: 8px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      background: #475569;
+      cursor: not-allowed;
+    }
+
+    .warning {
+      color: #fca5a5;
+      margin-top: 16px;
+      min-height: 24px;
+    }
+
+    .status {
+      margin-top: 16px;
+      padding: 12px;
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      color: #93c5fd;
+    }
+
+    .preview {
+      min-height: 240px;
+      padding: 20px;
+      background: #020617;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      white-space: pre-wrap;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #1e293b;
+      color: #bae6fd;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Secure Publishing Workflow</h1>
+    <p class="subtitle">
+      Controlled demo for testing SaaS-style draft, review and publish workflows.
+    </p>
+
+    <div class="grid">
+      <section>
+        <label for="role-select">User role</label>
+        <select id="role-select" data-testid="role-select">
+          <option value="author">Author</option>
+          <option value="editor">Editor</option>
+        </select>
+
+        <label for="title-input">Title</label>
+        <input id="title-input" data-testid="title-input" placeholder="Enter content title" />
+
+        <label for="body-input">Body</label>
+        <textarea id="body-input" data-testid="body-input" placeholder="Enter content body"></textarea>
+
+        <button id="save-draft-button" data-testid="save-draft-button">Save Draft</button>
+        <button id="submit-review-button" data-testid="submit-review-button">Submit for Review</button>
+        <button id="publish-button" data-testid="publish-button" disabled>Publish</button>
+
+        <p class="warning" data-testid="validation-message"></p>
+        <p class="status" data-testid="workflow-status">Status: Draft not saved</p>
+      </section>
+
+      <section>
+        <h2>Preview</h2>
+        <div class="preview" data-testid="preview-panel">
+          <strong data-testid="preview-title">No title yet</strong>
+          <p data-testid="preview-body">No content yet</p>
+        </div>
+        <span class="badge" data-testid="security-badge">Safe preview rendering enabled</span>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const roleSelect = document.getElementById("role-select");
+    const titleInput = document.getElementById("title-input");
+    const bodyInput = document.getElementById("body-input");
+    const saveDraftButton = document.getElementById("save-draft-button");
+    const submitReviewButton = document.getElementById("submit-review-button");
+    const publishButton = document.getElementById("publish-button");
+    const validationMessage = document.querySelector("[data-testid='validation-message']");
+    const workflowStatus = document.querySelector("[data-testid='workflow-status']");
+    const previewTitle = document.querySelector("[data-testid='preview-title']");
+    const previewBody = document.querySelector("[data-testid='preview-body']");
+
+    let currentStatus = "draft";
+
+    function validateContent() {
+      if (!titleInput.value.trim()) {
+        validationMessage.textContent = "Title is required before continuing.";
+        return false;
+      }
+
+      if (!bodyInput.value.trim()) {
+        validationMessage.textContent = "Body is required before continuing.";
+        return false;
+      }
+
+      validationMessage.textContent = "";
+      return true;
+    }
+
+    function updatePublishPermission() {
+      publishButton.disabled = roleSelect.value !== "editor" || currentStatus !== "review";
+    }
+
+    saveDraftButton.addEventListener("click", function () {
+      if (!validateContent()) {
+        return;
+      }
+
+      currentStatus = "draft_saved";
+      previewTitle.textContent = titleInput.value;
+      previewBody.textContent = bodyInput.value;
+      workflowStatus.textContent = "Status: Draft saved";
+      updatePublishPermission();
+    });
+
+    submitReviewButton.addEventListener("click", function () {
+      if (!validateContent()) {
+        return;
+      }
+
+      currentStatus = "review";
+      previewTitle.textContent = titleInput.value;
+      previewBody.textContent = bodyInput.value;
+      workflowStatus.textContent = "Status: Submitted for review";
+      updatePublishPermission();
+    });
+
+    publishButton.addEventListener("click", function () {
+      if (publishButton.disabled) {
+        return;
+      }
+
+      if (!validateContent()) {
+        return;
+      }
+
+      currentStatus = "published";
+      workflowStatus.textContent = "Status: Published";
+      updatePublishPermission();
+    });
+
+    roleSelect.addEventListener("change", updatePublishPermission);
+    updatePublishPermission();
+  </script>
+</body>
+</html>

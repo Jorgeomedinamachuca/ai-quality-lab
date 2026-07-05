@@ -253,3 +253,31 @@ Related files:
 - [`data/security_prompts.json`](data/security_prompts.json)
 - [`rubrics/prompt_injection_risk_rubric.md`](rubrics/prompt_injection_risk_rubric.md)
 - [`tests/test_prompt_injection_dataset.py`](tests/test_prompt_injection_dataset.py)
+
+### Experiment 004 — Secure Publishing Workflow
+
+This experiment simulates a small SaaS-style publishing workflow and validates it using Playwright and Pytest.
+
+It demonstrates how a Quality Engineer can test realistic product behaviour without using proprietary data, private business rules or company-specific implementation details.
+
+Covered areas:
+
+- draft creation
+- content preview
+- submit for review
+- publish workflow
+- required field validation
+- role-based publish permissions
+- safe rendering of potentially unsafe content
+- Playwright Page Object Model
+
+Documentation:
+
+- [docs/experiment_004_secure_publishing_workflow.md](docs/experiment_004_secure_publishing_workflow.md)
+
+Related files:
+
+- [demo/publishing_workflow.html](demo/publishing_workflow.html)
+- [pages/publishing_workflow_page.py](pages/publishing_workflow_page.py)
+- [tests/test_secure_publishing_workflow.py](tests/test_secure_publishing_workflow.py)
+- [rubrics/publishing_workflow_quality_rubric.md](rubrics/publishing_workflow_quality_rubric.md)
