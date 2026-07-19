@@ -54,6 +54,7 @@ AI Quality Lab is organised around several practical research areas:
 | Experiment 003 — Prompt Injection Risk Baseline | Structured AI security testing dataset for prompt injection risks. | Active |
 | Experiment 004 — Secure Publishing Workflow | SaaS-style workflow validation using Playwright and Page Object Model. | Active |
 | Experiment 005 — Shift-Left Requirement Quality Gate | Requirement quality, testability and risk validation before implementation. | Active |
+| 006 | Evidence-Based AI Recommendation Evaluation | Evaluates AI-style recommendations for evidence, explainability, risk and safety. | Pytest, JSON, AI QA, Risk-Based Testing |
 
 ---
 
@@ -181,6 +182,30 @@ Related files:
 - [`rubrics/shift_left_requirement_quality_rubric.md`](rubrics/shift_left_requirement_quality_rubric.md)
 - [`tests/test_shift_left_requirement_quality.py`](tests/test_shift_left_requirement_quality.py)
 - [`docs/experiment_005_shift_left_requirement_quality_gate.md`](docs/experiment_005_shift_left_requirement_quality_gate.md)
+
+## Experiment 006 — Evidence-Based AI Recommendation Evaluation
+
+This experiment evaluates AI-style recommendations using structured test data, a quality rubric and automated Pytest checks.
+
+It focuses on whether recommendations are evidence-based, explainable, safe and suitable for human review. It also checks for common AI recommendation risks such as weak single-signal matches, missing evidence, vague explanations, identity confusion and sensitive information exposure.
+
+It covers:
+
+- evidence-based recommendation quality;
+- weak single-signal matches;
+- missing evidence;
+- vague explanations;
+- identity confusion risk;
+- sensitive information exposure;
+- safety notes for high-risk recommendations;
+- human review readiness.
+
+Related files:
+
+- [`data/recommendation_cases.json`](data/recommendation_cases.json)
+- [`rubrics/ai_recommendation_quality_rubric.md`](rubrics/ai_recommendation_quality_rubric.md)
+- [`tests/test_ai_recommendation_quality.py`](tests/test_ai_recommendation_quality.py)
+- [`docs/experiment_006_ai_recommendation_quality_evaluation.md`](docs/experiment_006_ai_recommendation_quality_evaluation.md)
 
 ---
 

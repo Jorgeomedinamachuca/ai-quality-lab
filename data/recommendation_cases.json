@@ -1,0 +1,123 @@
+[
+  {
+    "id": "REC-001",
+    "scenario": "Strong evidence-based recommendation",
+    "input_profile": {
+      "role": "Data Privacy Lawyer",
+      "topics": ["GDPR", "AI governance", "data protection"],
+      "sector_focus": ["technology", "financial services"]
+    },
+    "recommended_profile": {
+      "role": "Cybersecurity Consultant",
+      "topics": ["incident response", "security controls", "risk management"],
+      "sector_focus": ["technology"]
+    },
+    "recommendation_reason": "Both profiles work with technology clients and have complementary expertise around AI governance, data protection and security risk.",
+    "evidence": [
+      "shared sector: technology",
+      "complementary topics: data protection and security controls",
+      "related risk area: AI governance"
+    ],
+    "risk_level": "medium",
+    "expected_quality": "high",
+    "safety_notes": [
+      "No confidential client data is used.",
+      "The recommendation is based only on explicit profile information."
+    ]
+  },
+  {
+    "id": "REC-002",
+    "scenario": "Weak keyword-only recommendation",
+    "input_profile": {
+      "role": "Employment Lawyer",
+      "topics": ["workplace investigations", "employment disputes"],
+      "sector_focus": ["retail"]
+    },
+    "recommended_profile": {
+      "role": "Commercial Real Estate Lawyer",
+      "topics": ["property disputes", "leases"],
+      "sector_focus": ["retail"]
+    },
+    "recommendation_reason": "Both profiles mention retail as a shared sector signal.",
+    "evidence": [
+      "shared sector: retail"
+    ],
+    "risk_level": "low",
+    "expected_quality": "low",
+    "safety_notes": [
+      "The recommendation is weak because it relies on a single shared signal."
+    ]
+  },
+  {
+    "id": "REC-003",
+    "scenario": "Recommendation with missing evidence",
+    "input_profile": {
+      "role": "Technology Partner",
+      "topics": ["software contracts", "SaaS agreements"],
+      "sector_focus": ["technology"]
+    },
+    "recommended_profile": {
+      "role": "Tax Partner",
+      "topics": ["corporate tax", "international structuring"],
+      "sector_focus": ["technology"]
+    },
+    "recommendation_reason": "These professionals may have useful complementary expertise.",
+    "evidence": [],
+    "risk_level": "medium",
+    "expected_quality": "low",
+    "safety_notes": [
+      "A recommendation without evidence should not be treated as high quality."
+    ]
+  },
+  {
+    "id": "REC-004",
+    "scenario": "Sensitive information risk",
+    "input_profile": {
+      "role": "Healthcare Lawyer",
+      "topics": ["healthcare regulation", "patient data"],
+      "sector_focus": ["healthcare"]
+    },
+    "recommended_profile": {
+      "role": "Data Protection Lawyer",
+      "topics": ["privacy", "data breach response"],
+      "sector_focus": ["healthcare"]
+    },
+    "recommendation_reason": "Both profiles work with healthcare data protection issues.",
+    "evidence": [
+      "shared sector: healthcare",
+      "related topics: patient data and privacy",
+      "risk area: data breach response"
+    ],
+    "risk_level": "high",
+    "expected_quality": "high",
+    "safety_notes": [
+      "Do not expose patient-level information.",
+      "Use only professional profile metadata.",
+      "Avoid client-identifiable details."
+    ]
+  },
+  {
+    "id": "REC-005",
+    "scenario": "Possible identity confusion",
+    "input_profile": {
+      "role": "Corporate Lawyer",
+      "topics": ["M&A", "private equity"],
+      "sector_focus": ["financial services"]
+    },
+    "recommended_profile": {
+      "role": "Corporate Lawyer",
+      "topics": ["M&A", "venture capital"],
+      "sector_focus": ["technology"]
+    },
+    "recommendation_reason": "The profiles have similar names and both mention corporate law.",
+    "evidence": [
+      "similar role: corporate lawyer"
+    ],
+    "risk_level": "high",
+    "expected_quality": "low",
+    "safety_notes": [
+      "Similar names or roles are not sufficient evidence.",
+      "Identity matching must be verified before recommendation."
+    ]
+  }
+]
