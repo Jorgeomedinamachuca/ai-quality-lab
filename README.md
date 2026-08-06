@@ -55,6 +55,7 @@ AI Quality Lab is organised around several practical research areas:
 | Experiment 004 — Secure Publishing Workflow | SaaS-style workflow validation using Playwright and Page Object Model. | Active |
 | Experiment 005 — Shift-Left Requirement Quality Gate | Requirement quality, testability and risk validation before implementation. | Active |
 | 006 | Evidence-Based AI Recommendation Evaluation | Evaluates AI-style recommendations for evidence, explainability, risk and safety. | Pytest, JSON, AI QA, Risk-Based Testing |
+| 007 | Analytics Signal Integrity Investigation | Investigates analytics signal declines before drawing conclusions about user behaviour. | Pytest, JSON, Analytics QA, Data Integrity |
 
 ---
 
@@ -206,6 +207,32 @@ Related files:
 - [`rubrics/ai_recommendation_quality_rubric.md`](rubrics/ai_recommendation_quality_rubric.md)
 - [`tests/test_ai_recommendation_quality.py`](tests/test_ai_recommendation_quality.py)
 - [`docs/experiment_006_ai_recommendation_quality_evaluation.md`](docs/experiment_006_ai_recommendation_quality_evaluation.md)
+
+---
+## Experiment 007 — Analytics Signal Integrity Investigation
+
+This experiment investigates analytics signal declines before drawing conclusions about user behaviour.
+
+It focuses on whether a metric decline reflects real behavioural change or whether it may be caused by measurement, tracking, dashboard, pipeline, segmentation, consent, bot filtering or reporting issues.
+
+It covers:
+
+- gradual analytics signal decline;
+- sudden post-release drops;
+- segment-specific drops;
+- dashboard-only reporting mismatches;
+- controlled methodology changes;
+- large unexplained declines;
+- raw data versus dashboard comparison;
+- safe conclusions that avoid overstating user behaviour;
+- investigation evidence before business interpretation.
+
+Related files:
+
+- [`data/analytics_signal_cases.json`](data/analytics_signal_cases.json)
+- [`rubrics/analytics_signal_integrity_rubric.md`](rubrics/analytics_signal_integrity_rubric.md)
+- [`tests/test_analytics_signal_integrity.py`](tests/test_analytics_signal_integrity.py)
+- [`docs/experiment_007_analytics_signal_integrity_investigation.md`](docs/experiment_007_analytics_signal_integrity_investigation.md)
 
 ---
 

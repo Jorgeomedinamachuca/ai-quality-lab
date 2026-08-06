@@ -1,0 +1,141 @@
+[
+  {
+    "id": "ASI-001",
+    "scenario": "Gradual analytics signal decline",
+    "description": "A product analytics signal shows a sustained multi-week decline across the reporting period.",
+    "metric_name": "content_engagement_event_count",
+    "event_type": "content_open",
+    "period": "weekly",
+    "baseline_value": 12000,
+    "current_value": 4600,
+    "decline_percentage": 61.7,
+    "decline_pattern": "gradual",
+    "affected_segments": ["all_segments"],
+    "possible_causes": [
+      "real usage decline",
+      "tracking degradation",
+      "content distribution change",
+      "privacy or consent impact"
+    ],
+    "evidence_required": [
+      "compare raw events with dashboard values",
+      "check release history during decline period",
+      "verify tracking script execution",
+      "review segment-level trends"
+    ],
+    "risk_level": "high",
+    "expected_investigation_status": "requires_investigation",
+    "safe_conclusion": "Do not conclude user engagement declined until measurement integrity has been verified."
+  },
+  {
+    "id": "ASI-002",
+    "scenario": "Sudden drop after release",
+    "description": "Analytics events drop sharply after a frontend release that changed page templates.",
+    "metric_name": "recommendation_click_event_count",
+    "event_type": "recommendation_click",
+    "period": "daily",
+    "baseline_value": 3200,
+    "current_value": 900,
+    "decline_percentage": 71.9,
+    "decline_pattern": "sudden",
+    "affected_segments": ["web_users"],
+    "possible_causes": [
+      "tracking script not firing",
+      "event listener removed",
+      "frontend regression",
+      "DOM selector change"
+    ],
+    "evidence_required": [
+      "compare release timestamp with analytics drop",
+      "inspect frontend tracking implementation",
+      "run browser-level event firing checks",
+      "review JavaScript console errors"
+    ],
+    "risk_level": "critical",
+    "expected_investigation_status": "requires_investigation",
+    "safe_conclusion": "A sudden post-release drop should be treated as a possible instrumentation regression."
+  },
+  {
+    "id": "ASI-003",
+    "scenario": "Segment-specific decline",
+    "description": "Analytics decline affects one customer segment while other segments remain stable.",
+    "metric_name": "article_view_event_count",
+    "event_type": "article_view",
+    "period": "weekly",
+    "baseline_value": 8500,
+    "current_value": 5100,
+    "decline_percentage": 40.0,
+    "decline_pattern": "segment_specific",
+    "affected_segments": ["segment_a"],
+    "possible_causes": [
+      "customer configuration change",
+      "integration issue",
+      "segment-level tracking configuration",
+      "content delivery issue"
+    ],
+    "evidence_required": [
+      "compare affected and unaffected segments",
+      "review customer configuration changes",
+      "check integration logs",
+      "validate event ingestion by segment"
+    ],
+    "risk_level": "medium",
+    "expected_investigation_status": "requires_investigation",
+    "safe_conclusion": "A segment-specific decline should not be generalised as a platform-wide behavioural change."
+  },
+  {
+    "id": "ASI-004",
+    "scenario": "Dashboard-only decline",
+    "description": "The dashboard shows a decline, but raw event logs remain stable.",
+    "metric_name": "engagement_dashboard_total",
+    "event_type": "aggregated_engagement",
+    "period": "weekly",
+    "baseline_value": 15000,
+    "current_value": 7000,
+    "decline_percentage": 53.3,
+    "decline_pattern": "reporting_mismatch",
+    "affected_segments": ["dashboard_users"],
+    "possible_causes": [
+      "dashboard query change",
+      "aggregation logic issue",
+      "date range mismatch",
+      "filtering error"
+    ],
+    "evidence_required": [
+      "compare dashboard totals with raw events",
+      "review dashboard query changes",
+      "check date range and timezone handling",
+      "validate aggregation rules"
+    ],
+    "risk_level": "high",
+    "expected_investigation_status": "requires_investigation",
+    "safe_conclusion": "A dashboard-only decline indicates a reporting integrity issue until raw data confirms the trend."
+  },
+  {
+    "id": "ASI-005",
+    "scenario": "Expected decline after bot filtering change",
+    "description": "Analytics events decline after bot filtering rules become stricter.",
+    "metric_name": "page_view_event_count",
+    "event_type": "page_view",
+    "period": "weekly",
+    "baseline_value": 20000,
+    "current_value": 14500,
+    "decline_percentage": 27.5,
+    "decline_pattern": "controlled_change",
+    "affected_segments": ["all_segments"],
+    "possible_causes": [
+      "bot filtering change",
+      "analytics quality improvement",
+      "removal of invalid traffic"
+    ],
+    "evidence_required": [
+      "review bot filtering release notes",
+      "compare valid and invalid traffic ratios",
+      "check whether conversion metrics remain stable",
+      "document intentional analytics methodology change"
+    ],
+    "risk_level": "low",
+    "expected_investigation_status": "explainable_change",
+    "safe_conclusion": "A decline caused by stricter bot filtering may improve metric quality rather than indicate reduced usage."
+  }
+]
