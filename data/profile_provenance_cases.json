@@ -1,0 +1,106 @@
+[
+  {
+    "id": "DPE-001",
+    "scenario": "Verified profile source",
+    "description": "A professional profile field is supported by a clearly identified source and timestamp.",
+    "profile_field": "current_role",
+    "displayed_value": "Data Protection Partner",
+    "source_type": "customer_provided_profile",
+    "source_reference": "profile_import_batch_2026_001",
+    "source_timestamp": "2026-01-15T10:30:00Z",
+    "entity_match_confidence": "high",
+    "identity_risk": "low",
+    "provenance_status": "verified",
+    "evidence": [
+      "source reference is present",
+      "source timestamp is present",
+      "field came from customer-provided profile data",
+      "identity match confidence is high"
+    ],
+    "expected_quality": "high",
+    "safe_action": "Display the profile field with standard review controls."
+  },
+  {
+    "id": "DPE-002",
+    "scenario": "Missing source reference",
+    "description": "A profile field is displayed without a clear source reference.",
+    "profile_field": "current_employer",
+    "displayed_value": "Example Advisory LLP",
+    "source_type": "unknown",
+    "source_reference": "",
+    "source_timestamp": "2026-02-01T09:00:00Z",
+    "entity_match_confidence": "medium",
+    "identity_risk": "medium",
+    "provenance_status": "incomplete",
+    "evidence": [
+      "source timestamp is present",
+      "source reference is missing",
+      "source type is unknown"
+    ],
+    "expected_quality": "low",
+    "safe_action": "Do not treat the field as verified until the original source is identified."
+  },
+  {
+    "id": "DPE-003",
+    "scenario": "Possible duplicate identity merge",
+    "description": "Two similar professional profiles appear to have been merged based on name and role similarity.",
+    "profile_field": "employment_history",
+    "displayed_value": "Partner at Example Legal LLP and Consultant at Northbridge Advisory",
+    "source_type": "automated_profile_merge",
+    "source_reference": "entity_resolution_job_2026_014",
+    "source_timestamp": "2026-03-03T14:45:00Z",
+    "entity_match_confidence": "low",
+    "identity_risk": "high",
+    "provenance_status": "requires_review",
+    "evidence": [
+      "similar names detected",
+      "similar roles detected",
+      "employment history contains conflicting organisations",
+      "entity match confidence is low"
+    ],
+    "expected_quality": "low",
+    "safe_action": "Block automatic publication and require manual identity review and verification."
+  },
+  {
+    "id": "DPE-004",
+    "scenario": "Stale profile data",
+    "description": "A professional profile field comes from an old source and may no longer be accurate.",
+    "profile_field": "current_role",
+    "displayed_value": "Senior Associate",
+    "source_type": "historical_import",
+    "source_reference": "legacy_profile_import_2023_009",
+    "source_timestamp": "2023-06-20T11:15:00Z",
+    "entity_match_confidence": "high",
+    "identity_risk": "medium",
+    "provenance_status": "stale",
+    "evidence": [
+      "source reference is present",
+      "source timestamp is older than two years",
+      "identity match confidence is high",
+      "field may no longer reflect current professional status"
+    ],
+    "expected_quality": "medium",
+    "safe_action": "Flag the field as stale and request confirmation before using it in recommendations."
+  },
+  {
+    "id": "DPE-005",
+    "scenario": "Cross-context contamination risk",
+    "description": "A profile field appears to contain information that may belong to a different organisation or context.",
+    "profile_field": "organisation_affiliation",
+    "displayed_value": "Partner at Example Legal LLP and Director at Horizon Strategy Group",
+    "source_type": "aggregated_profile_data",
+    "source_reference": "profile_aggregation_job_2026_021",
+    "source_timestamp": "2026-04-11T08:20:00Z",
+    "entity_match_confidence": "medium",
+    "identity_risk": "critical",
+    "provenance_status": "requires_review",
+    "evidence": [
+      "multiple organisations shown in a single profile field",
+      "source data was aggregated",
+      "entity match confidence is not high",
+      "organisation affiliation may belong to another profile"
+    ],
+    "expected_quality": "low",
+    "safe_action": "Suppress the field from display until provenance and identity boundaries are verified."
+  }
+]

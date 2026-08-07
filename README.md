@@ -56,6 +56,7 @@ AI Quality Lab is organised around several practical research areas:
 | Experiment 005 — Shift-Left Requirement Quality Gate | Requirement quality, testability and risk validation before implementation. | Active |
 | 006 | Evidence-Based AI Recommendation Evaluation | Evaluates AI-style recommendations for evidence, explainability, risk and safety. | Pytest, JSON, AI QA, Risk-Based Testing |
 | 007 | Analytics Signal Integrity Investigation | Investigates analytics signal declines before drawing conclusions about user behaviour. | Pytest, JSON, Analytics QA, Data Integrity |
+| 008 | Data Provenance and Entity Resolution Quality Gate | Validates profile data provenance, source traceability and identity safety before AI use. | Pytest, JSON, Data Quality, Entity Resolution |
 
 ---
 
@@ -233,6 +234,31 @@ Related files:
 - [`rubrics/analytics_signal_integrity_rubric.md`](rubrics/analytics_signal_integrity_rubric.md)
 - [`tests/test_analytics_signal_integrity.py`](tests/test_analytics_signal_integrity.py)
 - [`docs/experiment_007_analytics_signal_integrity_investigation.md`](docs/experiment_007_analytics_signal_integrity_investigation.md)
+
+## Experiment 008 — Data Provenance and Entity Resolution Quality Gate
+
+This experiment evaluates whether professional profile data is traceable, verifiable and safe before it is displayed or used in AI-powered recommendations.
+
+It focuses on data provenance, source traceability, entity resolution, stale data, identity confusion and cross-context contamination risk.
+
+It covers:
+
+- missing source references;
+- unclear source types;
+- stale profile data;
+- low-confidence identity matches;
+- duplicate identity merge risk;
+- cross-context contamination;
+- high or critical identity risk;
+- unsafe use of unverified data as AI recommendation evidence;
+- safe handling rules for risky profile fields.
+
+Related files:
+
+- [`data/profile_provenance_cases.json`](data/profile_provenance_cases.json)
+- [`rubrics/data_provenance_entity_resolution_rubric.md`](rubrics/data_provenance_entity_resolution_rubric.md)
+- [`tests/test_data_provenance_entity_resolution.py`](tests/test_data_provenance_entity_resolution.py)
+- [`docs/experiment_008_data_provenance_entity_resolution_quality_gate.md`](docs/experiment_008_data_provenance_entity_resolution_quality_gate.md)
 
 ---
 
