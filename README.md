@@ -58,6 +58,8 @@ AI Quality Lab is organised around several practical research areas:
 | 007 | Analytics Signal Integrity Investigation | Investigates analytics signal declines before drawing conclusions about user behaviour. | Pytest, JSON, Analytics QA, Data Integrity |
 | 008 | Data Provenance and Entity Resolution Quality Gate | Validates profile data provenance, source traceability and identity safety before AI use. | Pytest, JSON, Data Quality, Entity Resolution |
 
+| 009 | AI Output Grounding and Hallucination Guardrail | Evaluates whether AI outputs are supported by evidence and avoid hallucinated claims. | Pytest, JSON, LLM Evaluation, Groundedness |
+
 ---
 
 ## Experiment 001 — Chatbot UI Smoke Test
@@ -259,6 +261,32 @@ Related files:
 - [`rubrics/data_provenance_entity_resolution_rubric.md`](rubrics/data_provenance_entity_resolution_rubric.md)
 - [`tests/test_data_provenance_entity_resolution.py`](tests/test_data_provenance_entity_resolution.py)
 - [`docs/experiment_008_data_provenance_entity_resolution_quality_gate.md`](docs/experiment_008_data_provenance_entity_resolution_quality_gate.md)
+
+## Experiment 009 — AI Output Grounding and Hallucination Guardrail
+
+This experiment evaluates whether AI-generated outputs are grounded in the evidence provided.
+
+It focuses on unsupported claims, fabricated sources, overconfident conclusions, inference presented as fact, missing limitations and hallucination risk.
+
+It covers:
+
+- unsupported expertise claims;
+- fabricated source references;
+- inference presented as fact;
+- missing limitations;
+- overconfident conclusions;
+- weakly grounded outputs;
+- ungrounded outputs;
+- hallucination risk;
+- safe uncertainty handling;
+- rejection or rewrite rules for low-quality AI outputs.
+
+Related files:
+
+- [`data/ai_output_grounding_cases.json`](data/ai_output_grounding_cases.json)
+- [`rubrics/ai_output_grounding_rubric.md`](rubrics/ai_output_grounding_rubric.md)
+- [`tests/test_ai_output_grounding.py`](tests/test_ai_output_grounding.py)
+- [`docs/experiment_009_ai_output_grounding_and_hallucination_guardrail.md`](docs/experiment_009_ai_output_grounding_and_hallucination_guardrail.md)
 
 ---
 
