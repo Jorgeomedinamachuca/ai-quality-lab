@@ -1,0 +1,16 @@
+{
+  "name": "ai-quality-lab",
+  "version": "1.0.0",
+  "description": "AI Quality Engineering lab with Python quality gates and TypeScript Playwright browser automation.",
+  "private": true,
+  "scripts": {
+    "test:ui": "playwright test",
+    "test:ui:headed": "playwright test --headed",
+    "test:ui:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^26.2.0",
+    "typescript": "^5.9.0"
+  }
+}

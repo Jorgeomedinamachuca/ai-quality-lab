@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Review Workflow Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      max-width: 900px;
+      line-height: 1.5;
+    }
+
+    section {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .warning {
+      border-color: #b00020;
+      background: #fff3f3;
+      color: #750014;
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .success {
+      border-color: #0f6b2f;
+      background: #f1fff5;
+      color: #0f4f25;
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    label {
+      display: block;
+      margin-top: 0.75rem;
+      font-weight: bold;
+    }
+
+    select,
+    textarea {
+      width: 100%;
+      margin-top: 0.25rem;
+      padding: 0.5rem;
+    }
+
+    button {
+      margin-right: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Human-in-the-Loop AI Review Workflow</h1>
+
+  <section aria-label="AI output panel">
+    <h2>AI Output</h2>
+    <p data-testid="ai-output">
+      The professional is suitable for AI governance advisory work because the available evidence shows experience with data protection, technology clients and AI governance policies.
+    </p>
+  </section>
+
+  <section aria-label="Evidence panel">
+    <h2>Evidence</h2>
+    <ul data-testid="evidence-list">
+      <li>The profile states that the professional works on data protection matters.</li>
+      <li>The profile states that the professional advises technology clients.</li>
+      <li>The profile states that the professional has experience with AI governance policies.</li>
+    </ul>
+  </section>
+
+  <section aria-label="Risk assessment panel">
+    <h2>Risk Assessment</h2>
+
+    <label for="grounding-status">Grounding status</label>
+    <select id="grounding-status" data-testid="grounding-status">
+      <option value="fully_grounded">Fully grounded</option>
+      <option value="partially_grounded">Partially grounded</option>
+      <option value="weakly_grounded">Weakly grounded</option>
+      <option value="ungrounded">Ungrounded</option>
+    </select>
+
+    <label for="hallucination-risk">Hallucination risk</label>
+    <select id="hallucination-risk" data-testid="hallucination-risk">
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+      <option value="critical">Critical</option>
+    </select>
+
+    <label for="review-notes">Review notes</label>
+    <textarea id="review-notes" data-testid="review-notes" rows="4" placeholder="Add review notes when rejecting or requesting changes."></textarea>
+
+    <div id="warning-banner" class="warning" data-testid="warning-banner">
+      High-risk or weakly grounded AI outputs cannot be approved without further review.
+    </div>
+
+    <div id="success-banner" class="success" data-testid="success-banner">
+      AI output approved after human review.
+    </div>
+
+    <p>
+      Workflow status:
+      <span class="status" data-testid="workflow-status">Pending review</span>
+    </p>
+
+    <button type="button" data-testid="approve-button">Approve</button>
+    <button type="button" data-testid="reject-button">Reject</button>
+    <button type="button" data-testid="request-changes-button">Request changes</button>
+  </section>
+
+  <script>
+    const groundingStatus = document.querySelector("[data-testid='grounding-status']");
+    const hallucinationRisk = document.querySelector("[data-testid='hallucination-risk']");
+    const reviewNotes = document.querySelector("[data-testid='review-notes']");
+    const warningBanner = document.querySelector("[data-testid='warning-banner']");
+    const successBanner = document.querySelector("[data-testid='success-banner']");
+    const workflowStatus = document.querySelector("[data-testid='workflow-status']");
+    const approveButton = document.querySelector("[data-testid='approve-button']");
+    const rejectButton = document.querySelector("[data-testid='reject-button']");
+    const requestChangesButton = document.querySelector("[data-testid='request-changes-button']");
+
+    function isHighRiskReview() {
+      const weakGroundingStatuses = ["partially_grounded", "weakly_grounded", "ungrounded"];
+      const highRiskLevels = ["high", "critical"];
+
+      return (
+        weakGroundingStatuses.includes(groundingStatus.value) ||
+        highRiskLevels.includes(hallucinationRisk.value)
+      );
+    }
+
+    function updateRiskState() {
+      successBanner.style.display = "none";
+
+      if (isHighRiskReview()) {
+        warningBanner.style.display = "block";
+        approveButton.disabled = true;
+      } else {
+        warningBanner.style.display = "none";
+        approveButton.disabled = false;
+      }
+    }
+
+    groundingStatus.addEventListener("change", updateRiskState);
+    hallucinationRisk.addEventListener("change", updateRiskState);
+
+    approveButton.addEventListener("click", () => {
+      if (isHighRiskReview()) {
+        warningBanner.style.display = "block";
+        workflowStatus.textContent = "Approval blocked";
+        return;
+      }
+
+      workflowStatus.textContent = "Approved";
+      successBanner.style.display = "block";
+    });
+
+    rejectButton.addEventListener("click", () => {
+      if (reviewNotes.value.trim().length === 0) {
+        workflowStatus.textContent = "Rejection requires review notes";
+        return;
+      }
+
+      workflowStatus.textContent = "Rejected";
+      successBanner.style.display = "none";
+    });
+
+    requestChangesButton.addEventListener("click", () => {
+      if (reviewNotes.value.trim().length === 0) {
+        workflowStatus.textContent = "Change request requires review notes";
+        return;
+      }
+
+      workflowStatus.textContent = "Changes requested";
+      successBanner.style.display = "none";
+    });
+
+    updateRiskState();
+  </script>
+</body>
+</html>

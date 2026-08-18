@@ -57,8 +57,8 @@ AI Quality Lab is organised around several practical research areas:
 | 006 | Evidence-Based AI Recommendation Evaluation | Evaluates AI-style recommendations for evidence, explainability, risk and safety. | Pytest, JSON, AI QA, Risk-Based Testing |
 | 007 | Analytics Signal Integrity Investigation | Investigates analytics signal declines before drawing conclusions about user behaviour. | Pytest, JSON, Analytics QA, Data Integrity |
 | 008 | Data Provenance and Entity Resolution Quality Gate | Validates profile data provenance, source traceability and identity safety before AI use. | Pytest, JSON, Data Quality, Entity Resolution |
-
 | 009 | AI Output Grounding and Hallucination Guardrail | Evaluates whether AI outputs are supported by evidence and avoid hallucinated claims. | Pytest, JSON, LLM Evaluation, Groundedness |
+| 010 | Human-in-the-Loop AI Review Workflow | Validates browser-based review controls for approving, rejecting or requesting changes to AI-generated outputs. | Playwright, TypeScript, Browser Automation, AI Assurance |
 
 ---
 
@@ -287,6 +287,30 @@ Related files:
 - [`rubrics/ai_output_grounding_rubric.md`](rubrics/ai_output_grounding_rubric.md)
 - [`tests/test_ai_output_grounding.py`](tests/test_ai_output_grounding.py)
 - [`docs/experiment_009_ai_output_grounding_and_hallucination_guardrail.md`](docs/experiment_009_ai_output_grounding_and_hallucination_guardrail.md)
+
+## Experiment 010 — Human-in-the-Loop AI Review Workflow
+
+This experiment validates a browser-based human review workflow for AI-generated outputs.
+
+It focuses on the product layer where reviewers interact with AI-generated content and decide whether to approve, reject or request changes.
+
+It covers:
+
+- visibility of AI output;
+- visibility of supporting evidence;
+- visibility of review controls;
+- approval of fully grounded low-risk AI output;
+- blocking approval for weakly grounded AI output;
+- blocking approval for high hallucination-risk output;
+- requiring review notes before rejection;
+- requiring review notes before requesting changes;
+- clear workflow status after reviewer action.
+
+Related files:
+
+- [`demo/ai_review_workflow.html`](demo/ai_review_workflow.html)
+- [`tests-ts/ai-review-workflow.spec.ts`](tests-ts/ai-review-workflow.spec.ts)
+- [`docs/experiment_010_human_in_the_loop_ai_review_workflow.md`](docs/experiment_010_human_in_the_loop_ai_review_workflow.md)
 
 ---
 
