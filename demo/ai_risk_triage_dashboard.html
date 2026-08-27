@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Risk Triage Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      max-width: 900px;
+      line-height: 1.5;
+    }
+
+    section {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 0.75rem;
+      font-weight: bold;
+    }
+
+    select,
+    textarea {
+      width: 100%;
+      margin-top: 0.25rem;
+      padding: 0.5rem;
+    }
+
+    button {
+      margin-right: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .banner {
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+      display: none;
+      font-weight: bold;
+    }
+
+    .warning {
+      border: 1px solid #b00020;
+      background: #fff3f3;
+      color: #750014;
+    }
+
+    .notice {
+      border: 1px solid #8a5a00;
+      background: #fff8e6;
+      color: #5c3d00;
+    }
+
+    .success {
+      border: 1px solid #0f6b2f;
+      background: #f1fff5;
+      color: #0f4f25;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>AI Risk Triage and Review Routing</h1>
+
+  <section aria-label="Case selection panel">
+    <h2>AI Case</h2>
+
+    <label for="case-selector">Select case</label>
+    <select id="case-selector" data-testid="case-selector">
+      <option value="low">Fully grounded low-risk output</option>
+      <option value="medium">Partially grounded medium-risk output</option>
+      <option value="high">Weakly grounded high-risk output</option>
+      <option value="critical">Critical fabricated source output</option>
+    </select>
+  </section>
+
+  <section aria-label="Risk details panel">
+    <h2>Risk Details</h2>
+
+    <p>Grounding status: <span data-testid="grounding-status">fully_grounded</span></p>
+    <p>Hallucination risk: <span data-testid="hallucination-risk">low</span></p>
+    <p>Unsupported claims: <span data-testid="unsupported-claims-count">0</span></p>
+    <p>Evidence items: <span data-testid="evidence-items-count">4</span></p>
+    <p>Risk level: <span class="status" data-testid="risk-level">low</span></p>
+    <p>Review route: <span class="status" data-testid="review-route">standard_review</span></p>
+    <p>Approval policy: <span class="status" data-testid="approval-policy">approval_allowed</span></p>
+
+    <div id="standard-banner" class="banner success" data-testid="standard-banner">
+      Standard review route available for low-risk AI output.
+    </div>
+
+    <div id="notes-banner" class="banner notice" data-testid="notes-banner">
+      Reviewer notes are required before approval.
+    </div>
+
+    <div id="senior-banner" class="banner warning" data-testid="senior-banner">
+      Senior review is required before this AI output can proceed.
+    </div>
+
+    <div id="blocked-banner" class="banner warning" data-testid="blocked-banner">
+      Approval is blocked because this AI output is critical risk.
+    </div>
+  </section>
+
+  <section aria-label="Review action panel">
+    <h2>Review Action</h2>
+
+    <label for="review-notes">Review notes</label>
+    <textarea id="review-notes" data-testid="review-notes" rows="4" placeholder="Add notes for medium, high or critical risk cases."></textarea>
+
+    <p>
+      Workflow status:
+      <span class="status" data-testid="workflow-status">Pending triage</span>
+    </p>
+
+    <button type="button" data-testid="approve-button">Approve</button>
+    <button type="button" data-testid="escalate-button">Escalate</button>
+    <button type="button" data-testid="block-button">Block</button>
+  </section>
+
+  <script>
+    const cases = {
+      low: {
+        groundingStatus: "fully_grounded",
+        hallucinationRisk: "low",
+        unsupportedClaimsCount: "0",
+        evidenceItemsCount: "4",
+        riskLevel: "low",
+        reviewRoute: "standard_review",
+        approvalPolicy: "approval_allowed"
+      },
+      medium: {
+        groundingStatus: "partially_grounded",
+        hallucinationRisk: "medium",
+        unsupportedClaimsCount: "1",
+        evidenceItemsCount: "3",
+        riskLevel: "medium",
+        reviewRoute: "review_with_notes",
+        approvalPolicy: "approval_requires_notes"
+      },
+      high: {
+        groundingStatus: "weakly_grounded",
+        hallucinationRisk: "high",
+        unsupportedClaimsCount: "2",
+        evidenceItemsCount: "2",
+        riskLevel: "high",
+        reviewRoute: "senior_review",
+        approvalPolicy: "approval_blocked_pending_escalation"
+      },
+      critical: {
+        groundingStatus: "ungrounded",
+        hallucinationRisk: "critical",
+        unsupportedClaimsCount: "3",
+        evidenceItemsCount: "1",
+        riskLevel: "critical",
+        reviewRoute: "blocked",
+        approvalPolicy: "approval_not_allowed"
+      }
+    };
+
+    const caseSelector = document.querySelector("[data-testid='case-selector']");
+    const groundingStatus = document.querySelector("[data-testid='grounding-status']");
+    const hallucinationRisk = document.querySelector("[data-testid='hallucination-risk']");
+    const unsupportedClaimsCount = document.querySelector("[data-testid='unsupported-claims-count']");
+    const evidenceItemsCount = document.querySelector("[data-testid='evidence-items-count']");
+    const riskLevel = document.querySelector("[data-testid='risk-level']");
+    const reviewRoute = document.querySelector("[data-testid='review-route']");
+    const approvalPolicy = document.querySelector("[data-testid='approval-policy']");
+    const reviewNotes = document.querySelector("[data-testid='review-notes']");
+    const workflowStatus = document.querySelector("[data-testid='workflow-status']");
+    const approveButton = document.querySelector("[data-testid='approve-button']");
+    const escalateButton = document.querySelector("[data-testid='escalate-button']");
+    const blockButton = document.querySelector("[data-testid='block-button']");
+
+    const standardBanner = document.querySelector("[data-testid='standard-banner']");
+    const notesBanner = document.querySelector("[data-testid='notes-banner']");
+    const seniorBanner = document.querySelector("[data-testid='senior-banner']");
+    const blockedBanner = document.querySelector("[data-testid='blocked-banner']");
+
+    function hideBanners() {
+      standardBanner.style.display = "none";
+      notesBanner.style.display = "none";
+      seniorBanner.style.display = "none";
+      blockedBanner.style.display = "none";
+    }
+
+    function applyCase(caseKey) {
+      const selectedCase = cases[caseKey];
+
+      groundingStatus.textContent = selectedCase.groundingStatus;
+      hallucinationRisk.textContent = selectedCase.hallucinationRisk;
+      unsupportedClaimsCount.textContent = selectedCase.unsupportedClaimsCount;
+      evidenceItemsCount.textContent = selectedCase.evidenceItemsCount;
+      riskLevel.textContent = selectedCase.riskLevel;
+      reviewRoute.textContent = selectedCase.reviewRoute;
+      approvalPolicy.textContent = selectedCase.approvalPolicy;
+      reviewNotes.value = "";
+      workflowStatus.textContent = "Pending triage";
+
+      hideBanners();
+
+      approveButton.disabled = false;
+      escalateButton.disabled = false;
+      blockButton.disabled = false;
+
+      if (selectedCase.riskLevel === "low") {
+        standardBanner.style.display = "block";
+        escalateButton.disabled = true;
+        blockButton.disabled = true;
+      }
+
+      if (selectedCase.riskLevel === "medium") {
+        notesBanner.style.display = "block";
+      }
+
+      if (selectedCase.riskLevel === "high") {
+        seniorBanner.style.display = "block";
+        approveButton.disabled = true;
+      }
+
+      if (selectedCase.riskLevel === "critical") {
+        blockedBanner.style.display = "block";
+        approveButton.disabled = true;
+        escalateButton.disabled = true;
+      }
+    }
+
+    caseSelector.addEventListener("change", () => {
+      applyCase(caseSelector.value);
+    });
+
+    approveButton.addEventListener("click", () => {
+      const selectedCase = cases[caseSelector.value];
+
+      if (selectedCase.approvalPolicy === "approval_requires_notes" && reviewNotes.value.trim().length === 0) {
+        workflowStatus.textContent = "Approval requires reviewer notes";
+        return;
+      }
+
+      workflowStatus.textContent = "Approved";
+    });
+
+    escalateButton.addEventListener("click", () => {
+      const selectedCase = cases[caseSelector.value];
+
+      if (selectedCase.riskLevel === "medium" && reviewNotes.value.trim().length === 0) {
+        workflowStatus.textContent = "Escalation requires reviewer notes";
+        return;
+      }
+
+      workflowStatus.textContent = "Escalated to senior review";
+    });
+
+    blockButton.addEventListener("click", () => {
+      workflowStatus.textContent = "Blocked";
+    });
+
+    applyCase("low");
+  </script>
+</body>
+</html>

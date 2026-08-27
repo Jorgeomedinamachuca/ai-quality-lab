@@ -59,6 +59,7 @@ AI Quality Lab is organised around several practical research areas:
 | 008 | Data Provenance and Entity Resolution Quality Gate | Validates profile data provenance, source traceability and identity safety before AI use. | Pytest, JSON, Data Quality, Entity Resolution |
 | 009 | AI Output Grounding and Hallucination Guardrail | Evaluates whether AI outputs are supported by evidence and avoid hallucinated claims. | Pytest, JSON, LLM Evaluation, Groundedness |
 | 010 | Human-in-the-Loop AI Review Workflow | Validates browser-based review controls for approving, rejecting or requesting changes to AI-generated outputs. | Playwright, TypeScript, Browser Automation, AI Assurance |
+| 011 | AI Risk Triage and Review Routing | Combines Python risk-rule validation with TypeScript Playwright browser workflow routing for AI-generated outputs. | Pytest, JSON, Playwright, TypeScript, AI Risk Triage |
 
 ---
 
@@ -311,6 +312,36 @@ Related files:
 - [`demo/ai_review_workflow.html`](demo/ai_review_workflow.html)
 - [`tests-ts/ai-review-workflow.spec.ts`](tests-ts/ai-review-workflow.spec.ts)
 - [`docs/experiment_010_human_in_the_loop_ai_review_workflow.md`](docs/experiment_010_human_in_the_loop_ai_review_workflow.md)
+
+## Experiment 011 — AI Risk Triage and Review Routing
+
+This experiment validates an AI risk triage model and a browser-based review routing workflow.
+
+It combines Python/Pytest data validation with TypeScript/Playwright browser automation.
+
+It covers:
+
+- controlled AI risk levels;
+- review route validation;
+- approval policy validation;
+- unsupported claims risk escalation;
+- fabricated source blocking;
+- missing evidence escalation;
+- sensitive or regulated context escalation;
+- low-risk standard review;
+- medium-risk review with notes;
+- high-risk senior review;
+- critical-risk blocking;
+- browser-level enforcement of the risk model.
+
+Related files:
+
+- [`data/ai_risk_triage_cases.json`](data/ai_risk_triage_cases.json)
+- [`rubrics/ai_risk_triage_rubric.md`](rubrics/ai_risk_triage_rubric.md)
+- [`tests/test_ai_risk_triage.py`](tests/test_ai_risk_triage.py)
+- [`demo/ai_risk_triage_dashboard.html`](demo/ai_risk_triage_dashboard.html)
+- [`tests-ts/ai-risk-triage-dashboard.spec.ts`](tests-ts/ai-risk-triage-dashboard.spec.ts)
+- [`docs/experiment_011_ai_risk_triage_and_review_routing.md`](docs/experiment_011_ai_risk_triage_and_review_routing.md)
 
 ---
 
