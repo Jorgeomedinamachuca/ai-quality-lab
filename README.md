@@ -60,6 +60,7 @@ AI Quality Lab is organised around several practical research areas:
 | 009 | AI Output Grounding and Hallucination Guardrail | Evaluates whether AI outputs are supported by evidence and avoid hallucinated claims. | Pytest, JSON, LLM Evaluation, Groundedness |
 | 010 | Human-in-the-Loop AI Review Workflow | Validates browser-based review controls for approving, rejecting or requesting changes to AI-generated outputs. | Playwright, TypeScript, Browser Automation, AI Assurance |
 | 011 | AI Risk Triage and Review Routing | Combines Python risk-rule validation with TypeScript Playwright browser workflow routing for AI-generated outputs. | Pytest, JSON, Playwright, TypeScript, AI Risk Triage |
+| 012 | Cross-Layer AI Quality Regression Suite | Validates AI release candidates across Python quality gates and TypeScript Playwright browser workflow controls. | Pytest, JSON, Playwright, TypeScript, AI Regression Testing |
 
 ---
 
@@ -342,6 +343,34 @@ Related files:
 - [`demo/ai_risk_triage_dashboard.html`](demo/ai_risk_triage_dashboard.html)
 - [`tests-ts/ai-risk-triage-dashboard.spec.ts`](tests-ts/ai-risk-triage-dashboard.spec.ts)
 - [`docs/experiment_011_ai_risk_triage_and_review_routing.md`](docs/experiment_011_ai_risk_triage_and_review_routing.md)
+## Experiment 012 — Cross-Layer AI Quality Regression Suite
+
+This experiment validates a cross-layer AI quality regression suite for release candidates.
+
+It combines Python/Pytest release-readiness validation with TypeScript/Playwright browser automation for release workflow enforcement.
+
+It covers:
+
+- grounding regressions;
+- hallucination regressions;
+- risk routing regressions;
+- approval control regressions;
+- evidence traceability regressions;
+- critical failure blocking;
+- high-risk release escalation;
+- medium-risk sign-off requirements;
+- release status validation;
+- release decision validation;
+- browser-level release approval controls.
+
+Related files:
+
+- [`data/ai_quality_regression_cases.json`](data/ai_quality_regression_cases.json)
+- [`rubrics/ai_quality_regression_rubric.md`](rubrics/ai_quality_regression_rubric.md)
+- [`tests/test_ai_quality_regression.py`](tests/test_ai_quality_regression.py)
+- [`demo/ai_quality_release_dashboard.html`](demo/ai_quality_release_dashboard.html)
+- [`tests-ts/ai-quality-release-dashboard.spec.ts`](tests-ts/ai-quality-release-dashboard.spec.ts)
+- [`docs/experiment_012_cross_layer_ai_quality_regression_suite.md`](docs/experiment_012_cross_layer_ai_quality_regression_suite.md)
 
 ---
 

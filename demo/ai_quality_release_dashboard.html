@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Quality Release Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      max-width: 950px;
+      line-height: 1.5;
+    }
+
+    section {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 0.75rem;
+      font-weight: bold;
+    }
+
+    select,
+    textarea {
+      width: 100%;
+      margin-top: 0.25rem;
+      padding: 0.5rem;
+    }
+
+    button {
+      margin-right: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .banner {
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+      display: none;
+      font-weight: bold;
+    }
+
+    .success {
+      border: 1px solid #0f6b2f;
+      background: #f1fff5;
+      color: #0f4f25;
+    }
+
+    .notice {
+      border: 1px solid #8a5a00;
+      background: #fff8e6;
+      color: #5c3d00;
+    }
+
+    .warning {
+      border: 1px solid #b00020;
+      background: #fff3f3;
+      color: #750014;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cross-Layer AI Quality Regression Suite</h1>
+
+  <section aria-label="Release candidate selection panel">
+    <h2>Release Candidate</h2>
+
+    <label for="release-selector">Select release candidate</label>
+    <select id="release-selector" data-testid="release-selector">
+      <option value="ready">Safe AI quality release candidate</option>
+      <option value="review">Medium-risk regression requiring sign-off</option>
+      <option value="escalation">Risk routing regression detected</option>
+      <option value="blocked">Hallucination regression detected</option>
+    </select>
+  </section>
+
+  <section aria-label="Regression summary panel">
+    <h2>Regression Summary</h2>
+
+    <p>Release candidate: <span class="status" data-testid="release-candidate">RC-2026-001</span></p>
+    <p>Grounding regression: <span data-testid="grounding-regression">false</span></p>
+    <p>Hallucination regression: <span data-testid="hallucination-regression">false</span></p>
+    <p>Risk routing regression: <span data-testid="risk-routing-regression">false</span></p>
+    <p>Approval control regression: <span data-testid="approval-control-regression">false</span></p>
+    <p>Evidence traceability regression: <span data-testid="evidence-traceability-regression">false</span></p>
+    <p>Critical failures: <span data-testid="critical-failures-count">0</span></p>
+    <p>High-risk failures: <span data-testid="high-risk-failures-count">0</span></p>
+    <p>Medium-risk failures: <span data-testid="medium-risk-failures-count">0</span></p>
+    <p>Release status: <span class="status" data-testid="release-status">ready_for_release</span></p>
+    <p>Release decision: <span class="status" data-testid="release-decision">approve_release</span></p>
+
+    <div id="ready-banner" class="banner success" data-testid="ready-banner">
+      Release candidate is ready because all AI quality gates passed.
+    </div>
+
+    <div id="review-banner" class="banner notice" data-testid="review-banner">
+      Reviewer sign-off is required before release approval.
+    </div>
+
+    <div id="escalation-banner" class="banner warning" data-testid="escalation-banner">
+      Release candidate requires escalation because a high-risk regression was detected.
+    </div>
+
+    <div id="blocked-banner" class="banner warning" data-testid="blocked-banner">
+      Release candidate is blocked because a critical AI quality regression was detected.
+    </div>
+  </section>
+
+  <section aria-label="Release action panel">
+    <h2>Release Action</h2>
+
+    <label for="review-notes">Review notes</label>
+    <textarea id="review-notes" data-testid="review-notes" rows="4" placeholder="Add review notes for sign-off, escalation or rejection."></textarea>
+
+    <p>
+      Workflow status:
+      <span class="status" data-testid="workflow-status">Pending release review</span>
+    </p>
+
+    <button type="button" data-testid="approve-release-button">Approve release</button>
+    <button type="button" data-testid="signoff-button">Approve with sign-off</button>
+    <button type="button" data-testid="escalate-release-button">Escalate release review</button>
+    <button type="button" data-testid="reject-release-button">Reject release</button>
+  </section>
+
+  <script>
+    const releases = {
+      ready: {
+        releaseCandidate: "RC-2026-001",
+        groundingRegression: "false",
+        hallucinationRegression: "false",
+        riskRoutingRegression: "false",
+        approvalControlRegression: "false",
+        evidenceTraceabilityRegression: "false",
+        criticalFailuresCount: "0",
+        highRiskFailuresCount: "0",
+        mediumRiskFailuresCount: "0",
+        releaseStatus: "ready_for_release",
+        releaseDecision: "approve_release"
+      },
+      review: {
+        releaseCandidate: "RC-2026-006",
+        groundingRegression: "false",
+        hallucinationRegression: "false",
+        riskRoutingRegression: "false",
+        approvalControlRegression: "false",
+        evidenceTraceabilityRegression: "false",
+        criticalFailuresCount: "0",
+        highRiskFailuresCount: "0",
+        mediumRiskFailuresCount: "1",
+        releaseStatus: "review_required",
+        releaseDecision: "approve_with_signoff"
+      },
+      escalation: {
+        releaseCandidate: "RC-2026-003",
+        groundingRegression: "false",
+        hallucinationRegression: "false",
+        riskRoutingRegression: "true",
+        approvalControlRegression: "false",
+        evidenceTraceabilityRegression: "false",
+        criticalFailuresCount: "0",
+        highRiskFailuresCount: "1",
+        mediumRiskFailuresCount: "1",
+        releaseStatus: "requires_escalation",
+        releaseDecision: "escalate_release_review"
+      },
+      blocked: {
+        releaseCandidate: "RC-2026-002",
+        groundingRegression: "true",
+        hallucinationRegression: "true",
+        riskRoutingRegression: "false",
+        approvalControlRegression: "false",
+        evidenceTraceabilityRegression: "false",
+        criticalFailuresCount: "1",
+        highRiskFailuresCount: "1",
+        mediumRiskFailuresCount: "0",
+        releaseStatus: "blocked",
+        releaseDecision: "reject_release"
+      }
+    };
+
+    const releaseSelector = document.querySelector("[data-testid='release-selector']");
+    const reviewNotes = document.querySelector("[data-testid='review-notes']");
+    const workflowStatus = document.querySelector("[data-testid='workflow-status']");
+
+    const approveReleaseButton = document.querySelector("[data-testid='approve-release-button']");
+    const signoffButton = document.querySelector("[data-testid='signoff-button']");
+    const escalateReleaseButton = document.querySelector("[data-testid='escalate-release-button']");
+    const rejectReleaseButton = document.querySelector("[data-testid='reject-release-button']");
+
+    const readyBanner = document.querySelector("[data-testid='ready-banner']");
+    const reviewBanner = document.querySelector("[data-testid='review-banner']");
+    const escalationBanner = document.querySelector("[data-testid='escalation-banner']");
+    const blockedBanner = document.querySelector("[data-testid='blocked-banner']");
+
+    function setText(testId, value) {
+      document.querySelector(`[data-testid='${testId}']`).textContent = value;
+    }
+
+    function hideBanners() {
+      readyBanner.style.display = "none";
+      reviewBanner.style.display = "none";
+      escalationBanner.style.display = "none";
+      blockedBanner.style.display = "none";
+    }
+
+    function resetButtons() {
+      approveReleaseButton.disabled = true;
+      signoffButton.disabled = true;
+      escalateReleaseButton.disabled = true;
+      rejectReleaseButton.disabled = true;
+    }
+
+    function applyRelease(releaseKey) {
+      const selectedRelease = releases[releaseKey];
+
+      setText("release-candidate", selectedRelease.releaseCandidate);
+      setText("grounding-regression", selectedRelease.groundingRegression);
+      setText("hallucination-regression", selectedRelease.hallucinationRegression);
+      setText("risk-routing-regression", selectedRelease.riskRoutingRegression);
+      setText("approval-control-regression", selectedRelease.approvalControlRegression);
+      setText("evidence-traceability-regression", selectedRelease.evidenceTraceabilityRegression);
+      setText("critical-failures-count", selectedRelease.criticalFailuresCount);
+      setText("high-risk-failures-count", selectedRelease.highRiskFailuresCount);
+      setText("medium-risk-failures-count", selectedRelease.mediumRiskFailuresCount);
+      setText("release-status", selectedRelease.releaseStatus);
+      setText("release-decision", selectedRelease.releaseDecision);
+
+      reviewNotes.value = "";
+      workflowStatus.textContent = "Pending release review";
+
+      hideBanners();
+      resetButtons();
+
+      if (selectedRelease.releaseStatus === "ready_for_release") {
+        readyBanner.style.display = "block";
+        approveReleaseButton.disabled = false;
+      }
+
+      if (selectedRelease.releaseStatus === "review_required") {
+        reviewBanner.style.display = "block";
+        signoffButton.disabled = false;
+      }
+
+      if (selectedRelease.releaseStatus === "requires_escalation") {
+        escalationBanner.style.display = "block";
+        escalateReleaseButton.disabled = false;
+      }
+
+      if (selectedRelease.releaseStatus === "blocked") {
+        blockedBanner.style.display = "block";
+        rejectReleaseButton.disabled = false;
+      }
+    }
+
+    function notesAreRequired() {
+      const status = document.querySelector("[data-testid='release-status']").textContent;
+      return status !== "ready_for_release";
+    }
+
+    function requireNotesOrSetStatus(successStatus) {
+      if (notesAreRequired() && reviewNotes.value.trim().length === 0) {
+        workflowStatus.textContent = "Review notes required";
+        return;
+      }
+
+      workflowStatus.textContent = successStatus;
+    }
+
+    releaseSelector.addEventListener("change", () => {
+      applyRelease(releaseSelector.value);
+    });
+
+    approveReleaseButton.addEventListener("click", () => {
+      workflowStatus.textContent = "Release approved";
+    });
+
+    signoffButton.addEventListener("click", () => {
+      requireNotesOrSetStatus("Release approved with sign-off");
+    });
+
+    escalateReleaseButton.addEventListener("click", () => {
+      requireNotesOrSetStatus("Release review escalated");
+    });
+
+    rejectReleaseButton.addEventListener("click", () => {
+      requireNotesOrSetStatus("Release rejected");
+    });
+
+    applyRelease("ready");
+  </script>
+</body>
+</html>
