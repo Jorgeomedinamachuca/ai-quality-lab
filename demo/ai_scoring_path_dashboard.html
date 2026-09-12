@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AI Scoring Path Consistency Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      max-width: 950px;
+      line-height: 1.5;
+    }
+
+    section {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 0.75rem;
+      font-weight: bold;
+    }
+
+    select,
+    textarea {
+      width: 100%;
+      margin-top: 0.25rem;
+      padding: 0.5rem;
+    }
+
+    button {
+      margin-right: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .banner {
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+      display: none;
+      font-weight: bold;
+    }
+
+    .success {
+      border: 1px solid #0f6b2f;
+      background: #f1fff5;
+      color: #0f4f25;
+    }
+
+    .notice {
+      border: 1px solid #8a5a00;
+      background: #fff8e6;
+      color: #5c3d00;
+    }
+
+    .warning {
+      border: 1px solid #b00020;
+      background: #fff3f3;
+      color: #750014;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>AI Scoring Path Consistency Guardrail</h1>
+
+  <section aria-label="Scoring case selection panel">
+    <h2>Scoring Case</h2>
+
+    <label for="case-selector">Select scoring case</label>
+    <select id="case-selector" data-testid="case-selector">
+      <option value="valid-ai">Consistent AI scoring path</option>
+      <option value="retry-review">Retry path with explicit provenance</option>
+      <option value="mixed-path">Mixed scoring path detected</option>
+      <option value="missing-provenance">Missing scoring provenance</option>
+    </select>
+  </section>
+
+  <section aria-label="Scoring path details panel">
+    <h2>Scoring Path Details</h2>
+
+    <p>Record group: <span class="status" data-testid="record-group">eligible_ai_group</span></p>
+    <p>Expected scoring path: <span data-testid="expected-scoring-path">ai_scoring</span></p>
+    <p>Actual scoring paths: <span data-testid="actual-scoring-paths">ai_scoring</span></p>
+    <p>Scoring provenance present: <span data-testid="scoring-provenance-present">true</span></p>
+    <p>Retry used: <span data-testid="retry-used">false</span></p>
+    <p>Manual review required: <span data-testid="manual-review-required">false</span></p>
+    <p>Mixed path detected: <span data-testid="mixed-path-detected">false</span></p>
+    <p>Risk level: <span class="status" data-testid="risk-level">low</span></p>
+    <p>Quality status: <span class="status" data-testid="quality-status">valid</span></p>
+
+    <div id="valid-banner" class="banner success" data-testid="valid-banner">
+      Scoring result is valid because the expected path is consistent and provenance is present.
+    </div>
+
+    <div id="review-banner" class="banner notice" data-testid="review-banner">
+      Review notes are required because retry or scoring ambiguity was detected.
+    </div>
+
+    <div id="escalation-banner" class="banner warning" data-testid="escalation-banner">
+      Manual review is required because scoring path inconsistency was detected.
+    </div>
+
+    <div id="blocked-banner" class="banner warning" data-testid="blocked-banner">
+      Scoring result is blocked because scoring provenance is missing.
+    </div>
+  </section>
+
+  <section aria-label="Scoring action panel">
+    <h2>Scoring Action</h2>
+
+    <label for="review-notes">Review notes</label>
+    <textarea id="review-notes" data-testid="review-notes" rows="4" placeholder="Add review notes when scoring requires review."></textarea>
+
+    <p>
+      Workflow status:
+      <span class="status" data-testid="workflow-status">Pending scoring review</span>
+    </p>
+
+    <button type="button" data-testid="accept-button">Accept scoring result</button>
+    <button type="button" data-testid="review-button">Mark reviewed</button>
+    <button type="button" data-testid="block-button">Block scoring result</button>
+  </section>
+
+  <script>
+    const cases = {
+      "valid-ai": {
+        recordGroup: "eligible_ai_group",
+        expectedScoringPath: "ai_scoring",
+        actualScoringPaths: "ai_scoring",
+        scoringProvenancePresent: "true",
+        retryUsed: "false",
+        manualReviewRequired: "false",
+        mixedPathDetected: "false",
+        riskLevel: "low",
+        qualityStatus: "valid"
+      },
+      "retry-review": {
+        recordGroup: "eligible_ai_group",
+        expectedScoringPath: "ai_scoring",
+        actualScoringPaths: "ai_scoring",
+        scoringProvenancePresent: "true",
+        retryUsed: "true",
+        manualReviewRequired: "true",
+        mixedPathDetected: "false",
+        riskLevel: "medium",
+        qualityStatus: "review_required"
+      },
+      "mixed-path": {
+        recordGroup: "eligible_ai_group",
+        expectedScoringPath: "ai_scoring",
+        actualScoringPaths: "ai_scoring, rule_based_scoring",
+        scoringProvenancePresent: "true",
+        retryUsed: "true",
+        manualReviewRequired: "true",
+        mixedPathDetected: "true",
+        riskLevel: "high",
+        qualityStatus: "requires_review"
+      },
+      "missing-provenance": {
+        recordGroup: "eligible_ai_group",
+        expectedScoringPath: "ai_scoring",
+        actualScoringPaths: "none",
+        scoringProvenancePresent: "false",
+        retryUsed: "false",
+        manualReviewRequired: "true",
+        mixedPathDetected: "false",
+        riskLevel: "critical",
+        qualityStatus: "blocked"
+      }
+    };
+
+    const caseSelector = document.querySelector("[data-testid='case-selector']");
+    const reviewNotes = document.querySelector("[data-testid='review-notes']");
+    const workflowStatus = document.querySelector("[data-testid='workflow-status']");
+
+    const acceptButton = document.querySelector("[data-testid='accept-button']");
+    const reviewButton = document.querySelector("[data-testid='review-button']");
+    const blockButton = document.querySelector("[data-testid='block-button']");
+
+    const validBanner = document.querySelector("[data-testid='valid-banner']");
+    const reviewBanner = document.querySelector("[data-testid='review-banner']");
+    const escalationBanner = document.querySelector("[data-testid='escalation-banner']");
+    const blockedBanner = document.querySelector("[data-testid='blocked-banner']");
+
+    function setText(testId, value) {
+      document.querySelector(`[data-testid='${testId}']`).textContent = value;
+    }
+
+    function hideBanners() {
+      validBanner.style.display = "none";
+      reviewBanner.style.display = "none";
+      escalationBanner.style.display = "none";
+      blockedBanner.style.display = "none";
+    }
+
+    function resetButtons() {
+      acceptButton.disabled = true;
+      reviewButton.disabled = true;
+      blockButton.disabled = true;
+    }
+
+    function applyCase(caseKey) {
+      const selectedCase = cases[caseKey];
+
+      setText("record-group", selectedCase.recordGroup);
+      setText("expected-scoring-path", selectedCase.expectedScoringPath);
+      setText("actual-scoring-paths", selectedCase.actualScoringPaths);
+      setText("scoring-provenance-present", selectedCase.scoringProvenancePresent);
+      setText("retry-used", selectedCase.retryUsed);
+      setText("manual-review-required", selectedCase.manualReviewRequired);
+      setText("mixed-path-detected", selectedCase.mixedPathDetected);
+      setText("risk-level", selectedCase.riskLevel);
+      setText("quality-status", selectedCase.qualityStatus);
+
+      reviewNotes.value = "";
+      workflowStatus.textContent = "Pending scoring review";
+
+      hideBanners();
+      resetButtons();
+
+      if (selectedCase.qualityStatus === "valid") {
+        validBanner.style.display = "block";
+        acceptButton.disabled = false;
+      }
+
+      if (selectedCase.qualityStatus === "review_required") {
+        reviewBanner.style.display = "block";
+        reviewButton.disabled = false;
+      }
+
+      if (selectedCase.qualityStatus === "requires_review") {
+        escalationBanner.style.display = "block";
+        reviewButton.disabled = false;
+        blockButton.disabled = false;
+      }
+
+      if (selectedCase.qualityStatus === "blocked") {
+        blockedBanner.style.display = "block";
+        blockButton.disabled = false;
+      }
+    }
+
+    function requireNotesOrSetStatus(successStatus) {
+      const qualityStatus = document.querySelector("[data-testid='quality-status']").textContent;
+
+      if (qualityStatus !== "valid" && reviewNotes.value.trim().length === 0) {
+        workflowStatus.textContent = "Review notes required";
+        return;
+      }
+
+      workflowStatus.textContent = successStatus;
+    }
+
+    acceptButton.addEventListener("click", () => {
+      workflowStatus.textContent = "Scoring result accepted";
+    });
+
+    reviewButton.addEventListener("click", () => {
+      requireNotesOrSetStatus("Scoring result reviewed");
+    });
+
+    blockButton.addEventListener("click", () => {
+      requireNotesOrSetStatus("Scoring result blocked");
+    });
+
+    caseSelector.addEventListener("change", () => {
+      applyCase(caseSelector.value);
+    });
+
+    applyCase("valid-ai");
+  </script>
+</body>
+</html>

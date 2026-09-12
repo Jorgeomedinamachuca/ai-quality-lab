@@ -61,6 +61,7 @@ AI Quality Lab is organised around several practical research areas:
 | 010 | Human-in-the-Loop AI Review Workflow | Validates browser-based review controls for approving, rejecting or requesting changes to AI-generated outputs. | Playwright, TypeScript, Browser Automation, AI Assurance |
 | 011 | AI Risk Triage and Review Routing | Combines Python risk-rule validation with TypeScript Playwright browser workflow routing for AI-generated outputs. | Pytest, JSON, Playwright, TypeScript, AI Risk Triage |
 | 012 | Cross-Layer AI Quality Regression Suite | Validates AI release candidates across Python quality gates and TypeScript Playwright browser workflow controls. | Pytest, JSON, Playwright, TypeScript, AI Regression Testing |
+| 013 | AI Scoring Path Consistency Guardrail | Validates scoring path provenance, consistency and review controls across Python rules and TypeScript browser automation. | Pytest, JSON, Playwright, TypeScript, AI Scoring QA |
 
 ---
 
@@ -371,6 +372,32 @@ Related files:
 - [`demo/ai_quality_release_dashboard.html`](demo/ai_quality_release_dashboard.html)
 - [`tests-ts/ai-quality-release-dashboard.spec.ts`](tests-ts/ai-quality-release-dashboard.spec.ts)
 - [`docs/experiment_012_cross_layer_ai_quality_regression_suite.md`](docs/experiment_012_cross_layer_ai_quality_regression_suite.md)
+## Experiment 013 — AI Scoring Path Consistency Guardrail
+
+This experiment validates whether AI scoring results are produced through consistent, traceable and expected scoring paths.
+
+It combines Python/Pytest scoring path validation with TypeScript/Playwright browser automation for review workflow enforcement.
+
+It covers:
+
+- scoring provenance;
+- expected scoring path validation;
+- actual scoring path validation;
+- mixed scoring path detection;
+- unexpected scoring path detection;
+- retry-related ambiguity;
+- manual review routing;
+- blocked scoring results;
+- browser-level scoring acceptance controls.
+
+Related files:
+
+- [`data/ai_scoring_path_cases.json`](data/ai_scoring_path_cases.json)
+- [`rubrics/ai_scoring_path_consistency_rubric.md`](rubrics/ai_scoring_path_consistency_rubric.md)
+- [`tests/test_ai_scoring_path_consistency.py`](tests/test_ai_scoring_path_consistency.py)
+- [`demo/ai_scoring_path_dashboard.html`](demo/ai_scoring_path_dashboard.html)
+- [`tests-ts/ai-scoring-path-dashboard.spec.ts`](tests-ts/ai-scoring-path-dashboard.spec.ts)
+- [`docs/experiment_013_ai_scoring_path_consistency_guardrail.md`](docs/experiment_013_ai_scoring_path_consistency_guardrail.md)
 
 ---
 
