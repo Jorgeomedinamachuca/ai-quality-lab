@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Async Attribution Recovery Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      max-width: 950px;
+      line-height: 1.5;
+    }
+
+    section {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 0.75rem;
+      font-weight: bold;
+    }
+
+    select,
+    textarea {
+      width: 100%;
+      margin-top: 0.25rem;
+      padding: 0.5rem;
+    }
+
+    button {
+      margin-right: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .banner {
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+      display: none;
+      font-weight: bold;
+    }
+
+    .success {
+      border: 1px solid #0f6b2f;
+      background: #f1fff5;
+      color: #0f4f25;
+    }
+
+    .notice {
+      border: 1px solid #8a5a00;
+      background: #fff8e6;
+      color: #5c3d00;
+    }
+
+    .warning {
+      border: 1px solid #b00020;
+      background: #fff3f3;
+      color: #750014;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hot-Path Latency and Deferred Attribution Guardrail</h1>
+
+  <section aria-label="Attribution case selection panel">
+    <h2>Attribution Case</h2>
+
+    <label for="case-selector">Select attribution case</label>
+    <select id="case-selector" data-testid="case-selector">
+      <option value="immediate">Fast path with immediate attribution</option>
+      <option value="deferred">Fast path with deferred attribution</option>
+      <option value="slow">Slow path caused by synchronous dependency</option>
+      <option value="recovered">Background recovery completed</option>
+      <option value="failed-retryable">Background recovery failed but remains retryable</option>
+      <option value="lost">Attribution lost after dependency failure</option>
+    </select>
+  </section>
+
+  <section aria-label="Attribution details panel">
+    <h2>Attribution Details</h2>
+
+    <p>User-facing response: <span class="status" data-testid="user-facing-response">fast</span></p>
+    <p>Downstream dependency status: <span data-testid="downstream-dependency-status">available</span></p>
+    <p>Attribution status: <span data-testid="attribution-status">completed</span></p>
+    <p>Deferred record created: <span data-testid="deferred-record-created">false</span></p>
+    <p>Background recovery required: <span data-testid="background-recovery-required">false</span></p>
+    <p>Retryable failure: <span data-testid="retryable-failure">false</span></p>
+    <p>Audit evidence present: <span data-testid="audit-evidence-present">true</span></p>
+    <p>Data loss risk: <span class="status" data-testid="data-loss-risk">none</span></p>
+    <p>Quality status: <span class="status" data-testid="quality-status">valid</span></p>
+
+    <div id="valid-banner" class="banner success" data-testid="valid-banner">
+      Workflow is valid because attribution is complete or recovered with audit evidence.
+    </div>
+
+    <div id="recovery-banner" class="banner notice" data-testid="recovery-banner">
+      Attribution is deferred and background recovery is pending.
+    </div>
+
+    <div id="review-banner" class="banner notice" data-testid="review-banner">
+      Review is required because the workflow is slow or recovery failed but remains retryable.
+    </div>
+
+    <div id="blocked-banner" class="banner warning" data-testid="blocked-banner">
+      Workflow is blocked because attribution evidence is missing or attribution was lost.
+    </div>
+  </section>
+
+  <section aria-label="Attribution action panel">
+    <h2>Attribution Action</h2>
+
+    <label for="review-notes">Review notes</label>
+    <textarea id="review-notes" data-testid="review-notes" rows="4" placeholder="Add notes when attribution recovery requires review."></textarea>
+
+    <p>
+      Workflow status:
+      <span class="status" data-testid="workflow-status">Pending attribution review</span>
+    </p>
+
+    <button type="button" data-testid="accept-button">Accept workflow</button>
+    <button type="button" data-testid="recovery-button">Mark recovery pending</button>
+    <button type="button" data-testid="review-button">Mark reviewed</button>
+    <button type="button" data-testid="block-button">Block workflow</button>
+  </section>
+
+  <script>
+    const cases = {
+      "immediate": {
+        userFacingResponse: "fast",
+        downstreamDependencyStatus: "available",
+        attributionStatus: "completed",
+        deferredRecordCreated: "false",
+        backgroundRecoveryRequired: "false",
+        retryableFailure: "false",
+        auditEvidencePresent: "true",
+        dataLossRisk: "none",
+        qualityStatus: "valid"
+      },
+      "deferred": {
+        userFacingResponse: "fast",
+        downstreamDependencyStatus: "temporarily_unavailable",
+        attributionStatus: "deferred",
+        deferredRecordCreated: "true",
+        backgroundRecoveryRequired: "true",
+        retryableFailure: "true",
+        auditEvidencePresent: "true",
+        dataLossRisk: "low",
+        qualityStatus: "recovery_pending"
+      },
+      "slow": {
+        userFacingResponse: "slow",
+        downstreamDependencyStatus: "slow",
+        attributionStatus: "completed",
+        deferredRecordCreated: "false",
+        backgroundRecoveryRequired: "false",
+        retryableFailure: "false",
+        auditEvidencePresent: "true",
+        dataLossRisk: "medium",
+        qualityStatus: "requires_review"
+      },
+      "recovered": {
+        userFacingResponse: "fast",
+        downstreamDependencyStatus: "available",
+        attributionStatus: "recovered",
+        deferredRecordCreated: "true",
+        backgroundRecoveryRequired: "false",
+        retryableFailure: "false",
+        auditEvidencePresent: "true",
+        dataLossRisk: "none",
+        qualityStatus: "valid"
+      },
+      "failed-retryable": {
+        userFacingResponse: "fast",
+        downstreamDependencyStatus: "temporarily_unavailable",
+        attributionStatus: "recovery_failed",
+        deferredRecordCreated: "true",
+        backgroundRecoveryRequired: "true",
+        retryableFailure: "true",
+        auditEvidencePresent: "true",
+        dataLossRisk: "medium",
+        qualityStatus: "requires_review"
+      },
+      "lost": {
+        userFacingResponse: "fast",
+        downstreamDependencyStatus: "failed",
+        attributionStatus: "lost",
+        deferredRecordCreated: "false",
+        backgroundRecoveryRequired: "false",
+        retryableFailure: "false",
+        auditEvidencePresent: "false",
+        dataLossRisk: "critical",
+        qualityStatus: "blocked"
+      }
+    };
+
+    const caseSelector = document.querySelector("[data-testid='case-selector']");
+    const reviewNotes = document.querySelector("[data-testid='review-notes']");
+    const workflowStatus = document.querySelector("[data-testid='workflow-status']");
+
+    const acceptButton = document.querySelector("[data-testid='accept-button']");
+    const recoveryButton = document.querySelector("[data-testid='recovery-button']");
+    const reviewButton = document.querySelector("[data-testid='review-button']");
+    const blockButton = document.querySelector("[data-testid='block-button']");
+
+    const validBanner = document.querySelector("[data-testid='valid-banner']");
+    const recoveryBanner = document.querySelector("[data-testid='recovery-banner']");
+    const reviewBanner = document.querySelector("[data-testid='review-banner']");
+    const blockedBanner = document.querySelector("[data-testid='blocked-banner']");
+
+    function setText(testId, value) {
+      document.querySelector(`[data-testid='${testId}']`).textContent = value;
+    }
+
+    function hideBanners() {
+      validBanner.style.display = "none";
+      recoveryBanner.style.display = "none";
+      reviewBanner.style.display = "none";
+      blockedBanner.style.display = "none";
+    }
+
+    function resetButtons() {
+      acceptButton.disabled = true;
+      recoveryButton.disabled = true;
+      reviewButton.disabled = true;
+      blockButton.disabled = true;
+    }
+
+    function applyCase(caseKey) {
+      const selectedCase = cases[caseKey];
+
+      setText("user-facing-response", selectedCase.userFacingResponse);
+      setText("downstream-dependency-status", selectedCase.downstreamDependencyStatus);
+      setText("attribution-status", selectedCase.attributionStatus);
+      setText("deferred-record-created", selectedCase.deferredRecordCreated);
+      setText("background-recovery-required", selectedCase.backgroundRecoveryRequired);
+      setText("retryable-failure", selectedCase.retryableFailure);
+      setText("audit-evidence-present", selectedCase.auditEvidencePresent);
+      setText("data-loss-risk", selectedCase.dataLossRisk);
+      setText("quality-status", selectedCase.qualityStatus);
+
+      reviewNotes.value = "";
+      workflowStatus.textContent = "Pending attribution review";
+
+      hideBanners();
+      resetButtons();
+
+      if (selectedCase.qualityStatus === "valid") {
+        validBanner.style.display = "block";
+        acceptButton.disabled = false;
+      }
+
+      if (selectedCase.qualityStatus === "recovery_pending") {
+        recoveryBanner.style.display = "block";
+        recoveryButton.disabled = false;
+      }
+
+      if (selectedCase.qualityStatus === "requires_review") {
+        reviewBanner.style.display = "block";
+        reviewButton.disabled = false;
+      }
+
+      if (selectedCase.qualityStatus === "blocked") {
+        blockedBanner.style.display = "block";
+        blockButton.disabled = false;
+      }
+    }
+
+    function requireNotesOrSetStatus(successStatus) {
+      const qualityStatus = document.querySelector("[data-testid='quality-status']").textContent;
+
+      if (qualityStatus !== "valid" && reviewNotes.value.trim().length === 0) {
+        workflowStatus.textContent = "Review notes required";
+        return;
+      }
+
+      workflowStatus.textContent = successStatus;
+    }
+
+    acceptButton.addEventListener("click", () => {
+      workflowStatus.textContent = "Workflow accepted";
+    });
+
+    recoveryButton.addEventListener("click", () => {
+      requireNotesOrSetStatus("Recovery pending");
+    });
+
+    reviewButton.addEventListener("click", () => {
+      requireNotesOrSetStatus("Workflow reviewed");
+    });
+
+    blockButton.addEventListener("click", () => {
+      requireNotesOrSetStatus("Workflow blocked");
+    });
+
+    caseSelector.addEventListener("change", () => {
+      applyCase(caseSelector.value);
+    });
+
+    applyCase("immediate");
+  </script>
+</body>
+</html>

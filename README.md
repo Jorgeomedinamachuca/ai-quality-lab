@@ -62,6 +62,7 @@ AI Quality Lab is organised around several practical research areas:
 | 011 | AI Risk Triage and Review Routing | Combines Python risk-rule validation with TypeScript Playwright browser workflow routing for AI-generated outputs. | Pytest, JSON, Playwright, TypeScript, AI Risk Triage |
 | 012 | Cross-Layer AI Quality Regression Suite | Validates AI release candidates across Python quality gates and TypeScript Playwright browser workflow controls. | Pytest, JSON, Playwright, TypeScript, AI Regression Testing |
 | 013 | AI Scoring Path Consistency Guardrail | Validates scoring path provenance, consistency and review controls across Python rules and TypeScript browser automation. | Pytest, JSON, Playwright, TypeScript, AI Scoring QA |
+| 014 | Hot-Path Latency and Deferred Attribution Guardrail | Validates fast user-facing workflow behaviour, deferred attribution recovery, retryable failures and blocked states when attribution evidence is missing. | Pytest, JSON, Playwright, TypeScript, Async Workflow QA |
 
 ---
 
@@ -372,6 +373,7 @@ Related files:
 - [`demo/ai_quality_release_dashboard.html`](demo/ai_quality_release_dashboard.html)
 - [`tests-ts/ai-quality-release-dashboard.spec.ts`](tests-ts/ai-quality-release-dashboard.spec.ts)
 - [`docs/experiment_012_cross_layer_ai_quality_regression_suite.md`](docs/experiment_012_cross_layer_ai_quality_regression_suite.md)
+
 ## Experiment 013 — AI Scoring Path Consistency Guardrail
 
 This experiment validates whether AI scoring results are produced through consistent, traceable and expected scoring paths.
@@ -398,6 +400,35 @@ Related files:
 - [`demo/ai_scoring_path_dashboard.html`](demo/ai_scoring_path_dashboard.html)
 - [`tests-ts/ai-scoring-path-dashboard.spec.ts`](tests-ts/ai-scoring-path-dashboard.spec.ts)
 - [`docs/experiment_013_ai_scoring_path_consistency_guardrail.md`](docs/experiment_013_ai_scoring_path_consistency_guardrail.md)
+
+## Experiment 014 — Hot-Path Latency and Deferred Attribution Guardrail
+
+Experiment 014 validates a synthetic deferred attribution recovery workflow.
+
+The experiment checks that a user-facing action can remain fast while attribution or audit enrichment is completed asynchronously. It focuses on hot-path latency risk, deferred attribution records, background recovery, retryable recovery failure, preserved audit evidence and blocked workflows when attribution is lost.
+
+This experiment adds another reliability layer to the AI Quality Lab by testing not only whether a workflow produces the right status, but whether the system preserves traceability when work is moved away from the user-facing path.
+
+### Quality focus
+
+- Hot-path latency guardrails
+- Deferred attribution recovery
+- Background recovery logic
+- Retryable failure handling
+- Audit evidence preservation
+- Data loss risk classification
+- Review and blocked workflow routing
+
+### Related files
+
+```text
+data/async_attribution_recovery_cases.json
+rubrics/async_attribution_recovery_rubric.md
+tests/test_async_attribution_recovery.py
+demo/async_attribution_recovery_dashboard.html
+tests-ts/async-attribution-recovery-dashboard.spec.ts
+docs/experiment_014_hot_path_latency_and_deferred_attribution_guardrail.md
+
 
 ---
 
