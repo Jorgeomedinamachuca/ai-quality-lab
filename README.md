@@ -63,6 +63,7 @@ AI Quality Lab is organised around several practical research areas:
 | 012 | Cross-Layer AI Quality Regression Suite | Validates AI release candidates across Python quality gates and TypeScript Playwright browser workflow controls. | Pytest, JSON, Playwright, TypeScript, AI Regression Testing |
 | 013 | AI Scoring Path Consistency Guardrail | Validates scoring path provenance, consistency and review controls across Python rules and TypeScript browser automation. | Pytest, JSON, Playwright, TypeScript, AI Scoring QA |
 | 014 | Hot-Path Latency and Deferred Attribution Guardrail | Validates fast user-facing workflow behaviour, deferred attribution recovery, retryable failures and blocked states when attribution evidence is missing. | Pytest, JSON, Playwright, TypeScript, Async Workflow QA |
+| 015 | Cache Isolation and Freshness Guardrail | Validates cache key isolation, freshness, stale data risk, fallback behaviour, audit evidence and blocked states for unsafe cached enrichment data. | Pytest, JSON, Playwright, TypeScript, Cache QA |
 
 ---
 
@@ -429,6 +430,44 @@ demo/async_attribution_recovery_dashboard.html
 tests-ts/async-attribution-recovery-dashboard.spec.ts
 docs/experiment_014_hot_path_latency_and_deferred_attribution_guardrail.md
 
+
+## Experiment 015 — Cache Isolation and Freshness Guardrail
+
+Experiment 015 validates a synthetic cache isolation and freshness workflow.
+
+The experiment checks that cached enrichment data remains isolated by context, fresh enough to trust, supported by audit evidence and routed safely when fallback, review or blocking is required.
+
+This experiment adds a cache-aware reliability layer to the AI Quality Lab by testing whether performance optimisation preserves data isolation, freshness, provenance and trust.
+
+### Quality focus
+
+- Cache key isolation
+- User and tenant context separation
+- Freshness validation
+- Stale and expired cache handling
+- Safe fallback and refresh paths
+- Audit evidence preservation
+- Data leakage risk classification
+- Review and blocked workflow routing
+
+### Additional suite stabilisation
+
+During this experiment, two earlier tests were updated to remove dependency on an external website.
+
+The updated tests now use local synthetic fixtures instead of `example.com`, making the Python suite more deterministic and less dependent on network or third-party page behaviour.
+
+### Related files
+
+```text
+data/cache_isolation_freshness_cases.json
+rubrics/cache_isolation_freshness_rubric.md
+tests/test_cache_isolation_freshness.py
+demo/cache_isolation_freshness_dashboard.html
+tests-ts/cache-isolation-freshness-dashboard.spec.ts
+docs/experiment_015_cache_isolation_and_freshness_guardrail.md
+tests/test_ai_chatbot_ui.py
+tests/test_basic_navigation.py
+```
 
 ---
 

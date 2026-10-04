@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cache Isolation and Freshness Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      max-width: 950px;
+      line-height: 1.5;
+    }
+
+    section {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-top: 0.75rem;
+      font-weight: bold;
+    }
+
+    select,
+    textarea {
+      width: 100%;
+      margin-top: 0.25rem;
+      padding: 0.5rem;
+    }
+
+    button {
+      margin-right: 0.5rem;
+      margin-top: 1rem;
+      padding: 0.6rem 1rem;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .banner {
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+      display: none;
+      font-weight: bold;
+    }
+
+    .success {
+      border: 1px solid #0f6b2f;
+      background: #f1fff5;
+      color: #0f4f25;
+    }
+
+    .notice {
+      border: 1px solid #8a5a00;
+      background: #fff8e6;
+      color: #5c3d00;
+    }
+
+    .warning {
+      border: 1px solid #b00020;
+      background: #fff3f3;
+      color: #750014;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Cache Isolation and Freshness Guardrail</h1>
+
+  <section aria-label="Cache case selection panel">
+    <h2>Cache Case</h2>
+
+    <label for="case-selector">Select cache case</label>
+    <select id="case-selector" data-testid="case-selector">
+      <option value="fresh-hit">Fresh cache hit within the same context</option>
+      <option value="cache-miss">Cache miss with safe fallback</option>
+      <option value="stale-entry">Stale cache entry detected</option>
+      <option value="tenant-only">Shared cache key without user isolation</option>
+      <option value="global-key">Global cache key used for context-specific data</option>
+      <option value="missing-audit">Fresh cache entry without audit evidence</option>
+      <option value="expired-entry">Expired cache entry with safe refresh path</option>
+      <option value="disabled-cache">Disabled cache with safe direct lookup</option>
+    </select>
+  </section>
+
+  <section aria-label="Cache details panel">
+    <h2>Cache Details</h2>
+
+    <p>Cache status: <span class="status" data-testid="cache-status">hit</span></p>
+    <p>Context isolated: <span data-testid="context-isolated">true</span></p>
+    <p>Cache key scope: <span data-testid="cache-key-scope">user_and_tenant</span></p>
+    <p>Freshness status: <span data-testid="freshness-status">fresh</span></p>
+    <p>Fallback required: <span data-testid="fallback-required">false</span></p>
+    <p>Data leakage risk: <span class="status" data-testid="data-leakage-risk">none</span></p>
+    <p>Stale data risk: <span class="status" data-testid="stale-data-risk">none</span></p>
+    <p>Audit evidence present: <span data-testid="audit-evidence-present">true</span></p>
+    <p>Quality status: <span class="status" data-testid="quality-status">valid</span></p>
+
+    <div id="valid-banner" class="banner success" data-testid="valid-banner">
+      Cache usage is valid because isolation, freshness and audit evidence are preserved.
+    </div>
+
+    <div id="fallback-banner" class="banner notice" data-testid="fallback-banner">
+      Safe fallback or refresh is required before trusting cached enrichment data.
+    </div>
+
+    <div id="review-banner" class="banner notice" data-testid="review-banner">
+      Review is required because cache freshness or audit evidence is uncertain.
+    </div>
+
+    <div id="blocked-banner" class="banner warning" data-testid="blocked-banner">
+      Cache usage is blocked because isolation is unsafe or leakage risk is unacceptable.
+    </div>
+  </section>
+
+  <section aria-label="Cache action panel">
+    <h2>Cache Action</h2>
+
+    <label for="review-notes">Review notes</label>
+    <textarea id="review-notes" data-testid="review-notes" rows="4" placeholder="Add notes when cache fallback, review or blocking is required."></textarea>
+
+    <p>
+      Workflow status:
+      <span class="status" data-testid="workflow-status">Pending cache review</span>
+    </p>
+
+    <button type="button" data-testid="accept-button">Accept cache result</button>
+    <button type="button" data-testid="fallback-button">Use fallback</button>
+    <button type="button" data-testid="review-button">Mark reviewed</button>
+    <button type="button" data-testid="block-button">Block cache usage</button>
+  </section>
+
+  <script>
+    const cases = {
+      "fresh-hit": {
+        cacheStatus: "hit",
+        contextIsolated: "true",
+        cacheKeyScope: "user_and_tenant",
+        freshnessStatus: "fresh",
+        fallbackRequired: "false",
+        dataLeakageRisk: "none",
+        staleDataRisk: "none",
+        auditEvidencePresent: "true",
+        qualityStatus: "valid"
+      },
+      "cache-miss": {
+        cacheStatus: "miss",
+        contextIsolated: "true",
+        cacheKeyScope: "user_and_tenant",
+        freshnessStatus: "not_applicable",
+        fallbackRequired: "true",
+        dataLeakageRisk: "none",
+        staleDataRisk: "none",
+        auditEvidencePresent: "true",
+        qualityStatus: "fallback_required"
+      },
+      "stale-entry": {
+        cacheStatus: "hit",
+        contextIsolated: "true",
+        cacheKeyScope: "user_and_tenant",
+        freshnessStatus: "stale",
+        fallbackRequired: "true",
+        dataLeakageRisk: "none",
+        staleDataRisk: "medium",
+        auditEvidencePresent: "true",
+        qualityStatus: "requires_review"
+      },
+      "tenant-only": {
+        cacheStatus: "hit",
+        contextIsolated: "false",
+        cacheKeyScope: "tenant_only",
+        freshnessStatus: "fresh",
+        fallbackRequired: "true",
+        dataLeakageRisk: "high",
+        staleDataRisk: "none",
+        auditEvidencePresent: "true",
+        qualityStatus: "blocked"
+      },
+      "global-key": {
+        cacheStatus: "hit",
+        contextIsolated: "false",
+        cacheKeyScope: "global",
+        freshnessStatus: "fresh",
+        fallbackRequired: "true",
+        dataLeakageRisk: "critical",
+        staleDataRisk: "none",
+        auditEvidencePresent: "true",
+        qualityStatus: "blocked"
+      },
+      "missing-audit": {
+        cacheStatus: "hit",
+        contextIsolated: "true",
+        cacheKeyScope: "user_and_tenant",
+        freshnessStatus: "fresh",
+        fallbackRequired: "true",
+        dataLeakageRisk: "low",
+        staleDataRisk: "medium",
+        auditEvidencePresent: "false",
+        qualityStatus: "requires_review"
+      },
+      "expired-entry": {
+        cacheStatus: "expired",
+        contextIsolated: "true",
+        cacheKeyScope: "user_and_tenant",
+        freshnessStatus: "expired",
+        fallbackRequired: "true",
+        dataLeakageRisk: "none",
+        staleDataRisk: "medium",
+        auditEvidencePresent: "true",
+        qualityStatus: "fallback_required"
+      },
+      "disabled-cache": {
+        cacheStatus: "disabled",
+        contextIsolated: "true",
+        cacheKeyScope: "disabled",
+        freshnessStatus: "not_applicable",
+        fallbackRequired: "true",
+        dataLeakageRisk: "none",
+        staleDataRisk: "none",
+        auditEvidencePresent: "true",
+        qualityStatus: "valid"
+      }
+    };
+
+    const caseSelector = document.querySelector("[data-testid='case-selector']");
+    const reviewNotes = document.querySelector("[data-testid='review-notes']");
+    const workflowStatus = document.querySelector("[data-testid='workflow-status']");
+
+    const acceptButton = document.querySelector("[data-testid='accept-button']");
+    const fallbackButton = document.querySelector("[data-testid='fallback-button']");
+    const reviewButton = document.querySelector("[data-testid='review-button']");
+    const blockButton = document.querySelector("[data-testid='block-button']");
+
+    const validBanner = document.querySelector("[data-testid='valid-banner']");
+    const fallbackBanner = document.querySelector("[data-testid='fallback-banner']");
+    const reviewBanner = document.querySelector("[data-testid='review-banner']");
+    const blockedBanner = document.querySelector("[data-testid='blocked-banner']");
+
+    function setText(testId, value) {
+      document.querySelector(`[data-testid='${testId}']`).textContent = value;
+    }
+
+    function hideBanners() {
+      validBanner.style.display = "none";
+      fallbackBanner.style.display = "none";
+      reviewBanner.style.display = "none";
+      blockedBanner.style.display = "none";
+    }
+
+    function resetButtons() {
+      acceptButton.disabled = true;
+      fallbackButton.disabled = true;
+      reviewButton.disabled = true;
+      blockButton.disabled = true;
+    }
+
+    function applyCase(caseKey) {
+      const selectedCase = cases[caseKey];
+
+      setText("cache-status", selectedCase.cacheStatus);
+      setText("context-isolated", selectedCase.contextIsolated);
+      setText("cache-key-scope", selectedCase.cacheKeyScope);
+      setText("freshness-status", selectedCase.freshnessStatus);
+      setText("fallback-required", selectedCase.fallbackRequired);
+      setText("data-leakage-risk", selectedCase.dataLeakageRisk);
+      setText("stale-data-risk", selectedCase.staleDataRisk);
+      setText("audit-evidence-present", selectedCase.auditEvidencePresent);
+      setText("quality-status", selectedCase.qualityStatus);
+
+      reviewNotes.value = "";
+      workflowStatus.textContent = "Pending cache review";
+
+      hideBanners();
+      resetButtons();
+
+      if (selectedCase.qualityStatus === "valid") {
+        validBanner.style.display = "block";
+        acceptButton.disabled = false;
+      }
+
+      if (selectedCase.qualityStatus === "fallback_required") {
+        fallbackBanner.style.display = "block";
+        fallbackButton.disabled = false;
+      }
+
+      if (selectedCase.qualityStatus === "requires_review") {
+        reviewBanner.style.display = "block";
+        reviewButton.disabled = false;
+      }
+
+      if (selectedCase.qualityStatus === "blocked") {
+        blockedBanner.style.display = "block";
+        blockButton.disabled = false;
+      }
+    }
+
+    function requireNotesOrSetStatus(successStatus) {
+      const qualityStatus = document.querySelector("[data-testid='quality-status']").textContent;
+
+      if (qualityStatus !== "valid" && reviewNotes.value.trim().length === 0) {
+        workflowStatus.textContent = "Review notes required";
+        return;
+      }
+
+      workflowStatus.textContent = successStatus;
+    }
+
+    acceptButton.addEventListener("click", () => {
+      workflowStatus.textContent = "Cache result accepted";
+    });
+
+    fallbackButton.addEventListener("click", () => {
+      requireNotesOrSetStatus("Fallback path selected");
+    });
+
+    reviewButton.addEventListener("click", () => {
+      requireNotesOrSetStatus("Cache workflow reviewed");
+    });
+
+    blockButton.addEventListener("click", () => {
+      requireNotesOrSetStatus("Cache usage blocked");
+    });
+
+    caseSelector.addEventListener("change", () => {
+      applyCase(caseSelector.value);
+    });
+
+    applyCase("fresh-hit");
+  </script>
+</body>
+</html>
