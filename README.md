@@ -64,6 +64,7 @@ AI Quality Lab is organised around several practical research areas:
 | 013 | AI Scoring Path Consistency Guardrail | Validates scoring path provenance, consistency and review controls across Python rules and TypeScript browser automation. | Pytest, JSON, Playwright, TypeScript, AI Scoring QA |
 | 014 | Hot-Path Latency and Deferred Attribution Guardrail | Validates fast user-facing workflow behaviour, deferred attribution recovery, retryable failures and blocked states when attribution evidence is missing. | Pytest, JSON, Playwright, TypeScript, Async Workflow QA |
 | 015 | Cache Isolation and Freshness Guardrail | Validates cache key isolation, freshness, stale data risk, fallback behaviour, audit evidence and blocked states for unsafe cached enrichment data. | Pytest, JSON, Playwright, TypeScript, Cache QA |
+| 016 | Configuration-Driven Behaviour Guardrail | Validates feature flag consistency, configuration drift, environment isolation, fail-safe defaults and configuration quality decisions. | Pytest, JSON, Playwright, TypeScript, Configuration QA |
 
 ---
 
@@ -429,7 +430,7 @@ tests/test_async_attribution_recovery.py
 demo/async_attribution_recovery_dashboard.html
 tests-ts/async-attribution-recovery-dashboard.spec.ts
 docs/experiment_014_hot_path_latency_and_deferred_attribution_guardrail.md
-
+```
 
 ## Experiment 015 — Cache Isolation and Freshness Guardrail
 
@@ -468,6 +469,43 @@ docs/experiment_015_cache_isolation_and_freshness_guardrail.md
 tests/test_ai_chatbot_ui.py
 tests/test_basic_navigation.py
 ```
+
+## Experiment 016 — Configuration-Driven Behaviour Guardrail
+
+Experiment 016 evaluates synthetic configuration-driven behaviour using risk-based quality gates.
+
+The experiment validates configuration consistency, feature flag safety, environment isolation, configuration drift, fail-safe defaults and audit evidence.
+
+It combines declarative Python/Pytest validation with a TypeScript/Playwright browser workflow that simulates accepting, reviewing, blocking or applying safe fallback to configuration scenarios.
+
+### Quality focus
+
+- Configuration drift detection
+- Feature flag consistency
+- Environment isolation
+- Fail-safe defaults
+- Configuration provenance
+- Audit evidence
+- Risk-based quality decisions
+- Browser workflow guardrails
+
+### Related files
+
+- `data/configuration_behaviour_cases.json`
+- `rubrics/configuration_behaviour_rubric.md`
+- `tests/test_configuration_behaviour.py`
+- `demo/configuration_behaviour_dashboard.html`
+- `tests-ts/configuration-behaviour-dashboard.spec.ts`
+- `docs/experiment_016_configuration_driven_behaviour_guardrail.md`
+
+### Validation
+
+- 29 Python/Pytest tests for Experiment 016
+- 10 TypeScript/Playwright tests for Experiment 016
+- 232 Python/Pytest tests passing across the lab
+- 52 TypeScript/Playwright tests passing locally
+
+
 
 ---
 

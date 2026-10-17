@@ -1,0 +1,314 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Configuration-Driven Behaviour Guardrail</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      max-width: 950px;
+      line-height: 1.5;
+    }
+    section {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-top: 0.75rem;
+      font-weight: bold;
+    }
+    select, textarea {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.25rem;
+    }
+    button {
+      padding: 0.65rem 1rem;
+      margin: 0.5rem 0.5rem 0 0;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .banner {
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+    }
+    .valid { background: #edf9ef; color: #155724; }
+    .fallback { background: #fff8e5; color: #755300; }
+    .review { background: #fff1db; color: #714300; }
+    .blocked { background: #fff0f0; color: #921c27; }
+    [hidden] { display: none !important; }
+    .status { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Configuration-Driven Behaviour Guardrail</h1>
+    <p>Synthetic configuration quality assessment dashboard.</p>
+
+    <section aria-label="Configuration selection">
+      <h2>Configuration Case</h2>
+      <label for="case-selector">Select configuration scenario</label>
+      <select id="case-selector" data-testid="case-selector">
+        <option value="CDB-001">Verified configuration</option>
+        <option value="CDB-002">Intentionally disabled feature</option>
+        <option value="CDB-003">Missing configuration with safe default</option>
+        <option value="CDB-004">Configuration drift detected</option>
+        <option value="CDB-005">Environment isolation failure</option>
+        <option value="CDB-006">Unverified feature activation</option>
+        <option value="CDB-007">Invalid configuration with safe fallback</option>
+        <option value="CDB-008">Configuration drift resolved</option>
+      </select>
+    </section>
+
+    <section aria-label="Configuration details">
+      <h2>Configuration Details</h2>
+      <p>Environment: <span data-testid="environment"></span></p>
+      <p>Configuration status: <span data-testid="configuration-status"></span></p>
+      <p>Feature flag: <span data-testid="feature-flag-status"></span></p>
+      <p>Environment isolated: <span data-testid="environment-isolated"></span></p>
+      <p>Safe default applied: <span data-testid="safe-default-applied"></span></p>
+      <p>Audit evidence present: <span data-testid="audit-evidence-present"></span></p>
+      <p>Configuration drift: <span data-testid="configuration-drift"></span></p>
+      <p>Security risk: <span data-testid="security-risk"></span></p>
+      <p>Quality status: <span class="status" data-testid="quality-status"></span></p>
+
+      <div class="banner valid" data-testid="valid-banner" hidden>
+        Configuration verified. Approval is permitted.
+      </div>
+      <div class="banner fallback" data-testid="fallback-banner" hidden>
+        Safe fallback required. The affected feature must remain disabled.
+      </div>
+      <div class="banner review" data-testid="review-banner" hidden>
+        Configuration requires review before approval.
+      </div>
+      <div class="banner blocked" data-testid="blocked-banner" hidden>
+        Unsafe configuration. Approval is blocked.
+      </div>
+    </section>
+
+    <section aria-label="Configuration review">
+      <h2>Quality Decision</h2>
+      <label for="review-notes">Review notes</label>
+      <textarea id="review-notes" data-testid="review-notes"
+        rows="4" placeholder="Document the quality decision"></textarea>
+
+      <p>Workflow status:
+        <span class="status" data-testid="workflow-status">
+          Pending assessment
+        </span>
+      </p>
+
+      <button type="button" data-testid="accept-button">
+        Accept configuration
+      </button>
+      <button type="button" data-testid="fallback-button">
+        Apply safe fallback
+      </button>
+      <button type="button" data-testid="review-button">
+        Mark for review
+      </button>
+      <button type="button" data-testid="block-button">
+        Block configuration
+      </button>
+    </section>
+  </main>
+
+  <script>
+    // Synthetic configuration cases only.
+    const cases = {
+      "CDB-001": {
+        environment: "test",
+        configurationStatus: "valid",
+        featureFlagStatus: "enabled",
+        environmentIsolated: true,
+        safeDefaultApplied: false,
+        auditEvidencePresent: true,
+        configurationDrift: false,
+        securityRisk: "none",
+        qualityStatus: "valid"
+      },
+      "CDB-002": {
+        environment: "test",
+        configurationStatus: "valid",
+        featureFlagStatus: "disabled",
+        environmentIsolated: true,
+        safeDefaultApplied: false,
+        auditEvidencePresent: true,
+        configurationDrift: false,
+        securityRisk: "none",
+        qualityStatus: "valid"
+      },
+      "CDB-003": {
+        environment: "staging",
+        configurationStatus: "missing",
+        featureFlagStatus: "disabled",
+        environmentIsolated: true,
+        safeDefaultApplied: true,
+        auditEvidencePresent: true,
+        configurationDrift: false,
+        securityRisk: "low",
+        qualityStatus: "fallback_required"
+      },
+      "CDB-004": {
+        environment: "staging",
+        configurationStatus: "drift_detected",
+        featureFlagStatus: "enabled",
+        environmentIsolated: true,
+        safeDefaultApplied: false,
+        auditEvidencePresent: true,
+        configurationDrift: true,
+        securityRisk: "medium",
+        qualityStatus: "requires_review"
+      },
+      "CDB-005": {
+        environment: "production",
+        configurationStatus: "invalid",
+        featureFlagStatus: "enabled",
+        environmentIsolated: false,
+        safeDefaultApplied: false,
+        auditEvidencePresent: true,
+        configurationDrift: true,
+        securityRisk: "critical",
+        qualityStatus: "blocked"
+      },
+      "CDB-006": {
+        environment: "production",
+        configurationStatus: "unverified",
+        featureFlagStatus: "enabled",
+        environmentIsolated: true,
+        safeDefaultApplied: false,
+        auditEvidencePresent: false,
+        configurationDrift: false,
+        securityRisk: "high",
+        qualityStatus: "blocked"
+      },
+      "CDB-007": {
+        environment: "staging",
+        configurationStatus: "invalid",
+        featureFlagStatus: "disabled",
+        environmentIsolated: true,
+        safeDefaultApplied: true,
+        auditEvidencePresent: true,
+        configurationDrift: false,
+        securityRisk: "medium",
+        qualityStatus: "fallback_required"
+      },
+      "CDB-008": {
+        environment: "production",
+        configurationStatus: "valid",
+        featureFlagStatus: "enabled",
+        environmentIsolated: true,
+        safeDefaultApplied: false,
+        auditEvidencePresent: true,
+        configurationDrift: false,
+        securityRisk: "none",
+        qualityStatus: "valid"
+      }
+    };
+
+    const selector = document.querySelector("[data-testid='case-selector']");
+    const notes = document.querySelector("[data-testid='review-notes']");
+    const workflow = document.querySelector("[data-testid='workflow-status']");
+
+    const actions = {
+      valid: "accept-button",
+      fallback_required: "fallback-button",
+      requires_review: "review-button",
+      blocked: "block-button"
+    };
+
+    const banners = {
+      valid: "valid-banner",
+      fallback_required: "fallback-banner",
+      requires_review: "review-banner",
+      blocked: "blocked-banner"
+    };
+
+    function element(testId) {
+      return document.querySelector(`[data-testid="${testId}"]`);
+    }
+
+    function showCase(id) {
+      const item = cases[id];
+      if (!item) return;
+
+      const fields = {
+        "environment": item.environment,
+        "configuration-status": item.configurationStatus,
+        "feature-flag-status": item.featureFlagStatus,
+        "environment-isolated": item.environmentIsolated,
+        "safe-default-applied": item.safeDefaultApplied,
+        "audit-evidence-present": item.auditEvidencePresent,
+        "configuration-drift": item.configurationDrift,
+        "security-risk": item.securityRisk,
+        "quality-status": item.qualityStatus
+      };
+
+      for (const [name, value] of Object.entries(fields)) {
+        element(name).textContent = String(value);
+      }
+
+      Object.values(actions).forEach(id => {
+        element(id).disabled = true;
+      });
+
+      Object.values(banners).forEach(id => {
+        element(id).hidden = true;
+      });
+
+      element(actions[item.qualityStatus]).disabled = false;
+      element(banners[item.qualityStatus]).hidden = false;
+
+      notes.value = "";
+      workflow.textContent = "Pending assessment";
+    }
+
+    function performAction(allowedStatus, successMessage) {
+      const selected = cases[selector.value];
+
+      if (selected.qualityStatus !== allowedStatus) {
+        workflow.textContent = "Action not permitted";
+        return;
+      }
+
+      if (allowedStatus !== "valid" && !notes.value.trim()) {
+        workflow.textContent = "Review notes required";
+        return;
+      }
+
+      workflow.textContent = successMessage;
+    }
+
+    element("accept-button").addEventListener("click", () => {
+      performAction("valid", "Configuration accepted");
+    });
+
+    element("fallback-button").addEventListener("click", () => {
+      performAction("fallback_required", "Safe fallback selected");
+    });
+
+    element("review-button").addEventListener("click", () => {
+      performAction("requires_review", "Configuration marked for review");
+    });
+
+    element("block-button").addEventListener("click", () => {
+      performAction("blocked", "Configuration blocked");
+    });
+
+    selector.addEventListener("change", () => showCase(selector.value));
+    showCase(selector.value);
+  </script>
+</body>
+</html>
