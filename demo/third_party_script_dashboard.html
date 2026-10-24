@@ -1,0 +1,396 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Third-Party Script Governance Guardrail</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      line-height: 1.5;
+    }
+
+    section {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.4rem;
+      font-weight: bold;
+    }
+
+    select, textarea {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 0.65rem;
+    }
+
+    button {
+      padding: 0.65rem 1rem;
+      margin: 0.5rem 0.5rem 0 0;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .banner {
+      padding: 0.8rem;
+      margin-top: 1rem;
+      border-radius: 6px;
+    }
+
+    .valid {
+      background: #e9f7ed;
+      color: #175c2d;
+    }
+
+    .review {
+      background: #fff6dd;
+      color: #765000;
+    }
+
+    .blocked {
+      background: #ffecec;
+      color: #8b1723;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Third-Party Script Governance Guardrail</h1>
+    <p>
+      Synthetic script governance dashboard for evaluating
+      authorisation, integrity, provenance and execution decisions.
+    </p>
+
+    <section aria-label="Script scenario selection">
+      <h2>Script Scenario</h2>
+
+      <label for="case-selector">Select script governance case</label>
+      <select id="case-selector" data-testid="case-selector">
+        <option value="TPS-001">Approved script with verified integrity</option>
+        <option value="TPS-002">Unapproved script source</option>
+        <option value="TPS-003">Integrity verification mismatch</option>
+        <option value="TPS-004">Missing audit evidence</option>
+        <option value="TPS-005">Script disabled by configuration</option>
+        <option value="TPS-006">Environment isolation failure</option>
+        <option value="TPS-007">Pending script approval</option>
+        <option value="TPS-008">Verified script without execution request</option>
+        <option value="TPS-009">Unverified script integrity</option>
+      </select>
+    </section>
+
+    <section aria-label="Script governance details">
+      <h2>Governance Details</h2>
+
+      <p>Environment:
+        <span data-testid="environment"></span>
+      </p>
+      <p>Script status:
+        <span data-testid="script-status"></span>
+      </p>
+      <p>Source allowlisted:
+        <span data-testid="source-allowlisted"></span>
+      </p>
+      <p>Integrity status:
+        <span data-testid="integrity-status"></span>
+      </p>
+      <p>Execution requested:
+        <span data-testid="execution-requested"></span>
+      </p>
+      <p>Execution allowed:
+        <span data-testid="execution-allowed"></span>
+      </p>
+      <p>Environment isolated:
+        <span data-testid="environment-isolated"></span>
+      </p>
+      <p>Audit evidence present:
+        <span data-testid="audit-evidence-present"></span>
+      </p>
+      <p>Security risk:
+        <span data-testid="security-risk"></span>
+      </p>
+      <p>Quality status:
+        <span class="status" data-testid="quality-status"></span>
+      </p>
+
+      <div class="banner valid"
+           data-testid="valid-banner" hidden>
+        Governance checks passed. The declared execution decision
+        is consistent with the approved script state.
+      </div>
+
+      <div class="banner review"
+           data-testid="review-banner" hidden>
+        Script governance requires review. Execution remains denied.
+      </div>
+
+      <div class="banner blocked"
+           data-testid="blocked-banner" hidden>
+        Script execution is blocked by the governance policy.
+      </div>
+    </section>
+
+    <section aria-label="Script governance actions">
+      <h2>Quality Decision</h2>
+
+      <label for="review-notes">Review notes</label>
+      <textarea id="review-notes"
+                data-testid="review-notes"
+                rows="4"
+                placeholder="Document the governance decision"></textarea>
+
+      <p>Workflow status:
+        <span class="status" data-testid="workflow-status">
+          Pending assessment
+        </span>
+      </p>
+
+      <button type="button" data-testid="accept-button">
+        Accept governance decision
+      </button>
+
+      <button type="button" data-testid="review-button">
+        Mark for review
+      </button>
+
+      <button type="button" data-testid="block-button">
+        Confirm blocked state
+      </button>
+    </section>
+  </main>
+
+  <script>
+    // Synthetic, declarative cases. No external scripts are loaded.
+    const cases = {
+      "TPS-001": {
+        environment: "test",
+        scriptStatus: "approved",
+        sourceAllowlisted: true,
+        integrityStatus: "verified",
+        executionRequested: true,
+        executionAllowed: true,
+        environmentIsolated: true,
+        auditEvidencePresent: true,
+        securityRisk: "none",
+        qualityStatus: "valid"
+      },
+      "TPS-002": {
+        environment: "staging",
+        scriptStatus: "unapproved",
+        sourceAllowlisted: false,
+        integrityStatus: "unverified",
+        executionRequested: true,
+        executionAllowed: false,
+        environmentIsolated: true,
+        auditEvidencePresent: true,
+        securityRisk: "high",
+        qualityStatus: "blocked"
+      },
+      "TPS-003": {
+        environment: "production",
+        scriptStatus: "approved",
+        sourceAllowlisted: true,
+        integrityStatus: "mismatch",
+        executionRequested: true,
+        executionAllowed: false,
+        environmentIsolated: true,
+        auditEvidencePresent: true,
+        securityRisk: "critical",
+        qualityStatus: "blocked"
+      },
+      "TPS-004": {
+        environment: "staging",
+        scriptStatus: "approved",
+        sourceAllowlisted: true,
+        integrityStatus: "verified",
+        executionRequested: true,
+        executionAllowed: false,
+        environmentIsolated: true,
+        auditEvidencePresent: false,
+        securityRisk: "medium",
+        qualityStatus: "requires_review"
+      },
+      "TPS-005": {
+        environment: "test",
+        scriptStatus: "disabled",
+        sourceAllowlisted: true,
+        integrityStatus: "verified",
+        executionRequested: false,
+        executionAllowed: false,
+        environmentIsolated: true,
+        auditEvidencePresent: true,
+        securityRisk: "none",
+        qualityStatus: "valid"
+      },
+      "TPS-006": {
+        environment: "production",
+        scriptStatus: "approved",
+        sourceAllowlisted: true,
+        integrityStatus: "verified",
+        executionRequested: true,
+        executionAllowed: false,
+        environmentIsolated: false,
+        auditEvidencePresent: true,
+        securityRisk: "critical",
+        qualityStatus: "blocked"
+      },
+      "TPS-007": {
+        environment: "staging",
+        scriptStatus: "pending_review",
+        sourceAllowlisted: true,
+        integrityStatus: "verified",
+        executionRequested: true,
+        executionAllowed: false,
+        environmentIsolated: true,
+        auditEvidencePresent: true,
+        securityRisk: "medium",
+        qualityStatus: "requires_review"
+      },
+      "TPS-008": {
+        environment: "production",
+        scriptStatus: "approved",
+        sourceAllowlisted: true,
+        integrityStatus: "verified",
+        executionRequested: false,
+        executionAllowed: false,
+        environmentIsolated: true,
+        auditEvidencePresent: true,
+        securityRisk: "none",
+        qualityStatus: "valid"
+      },
+      "TPS-009": {
+        environment: "production",
+        scriptStatus: "approved",
+        sourceAllowlisted: true,
+        integrityStatus: "unverified",
+        executionRequested: true,
+        executionAllowed: false,
+        environmentIsolated: true,
+        auditEvidencePresent: true,
+        securityRisk: "high",
+        qualityStatus: "blocked"
+      }
+    };
+
+    const selector = document.querySelector(
+      "[data-testid='case-selector']"
+    );
+
+    const notes = document.querySelector(
+      "[data-testid='review-notes']"
+    );
+
+    const workflow = document.querySelector(
+      "[data-testid='workflow-status']"
+    );
+
+    const actionIds = {
+      valid: "accept-button",
+      requires_review: "review-button",
+      blocked: "block-button"
+    };
+
+    const bannerIds = {
+      valid: "valid-banner",
+      requires_review: "review-banner",
+      blocked: "blocked-banner"
+    };
+
+    function element(testId) {
+      return document.querySelector(
+        `[data-testid="${testId}"]`
+      );
+    }
+
+    function displayCase(caseId) {
+      const item = cases[caseId];
+      if (!item) return;
+
+      const fields = {
+        "environment": item.environment,
+        "script-status": item.scriptStatus,
+        "source-allowlisted": item.sourceAllowlisted,
+        "integrity-status": item.integrityStatus,
+        "execution-requested": item.executionRequested,
+        "execution-allowed": item.executionAllowed,
+        "environment-isolated": item.environmentIsolated,
+        "audit-evidence-present": item.auditEvidencePresent,
+        "security-risk": item.securityRisk,
+        "quality-status": item.qualityStatus
+      };
+
+      for (const [name, value] of Object.entries(fields)) {
+        element(name).textContent = String(value);
+      }
+
+      Object.values(actionIds).forEach(id => {
+        element(id).disabled = true;
+      });
+
+      Object.values(bannerIds).forEach(id => {
+        element(id).hidden = true;
+      });
+
+      element(actionIds[item.qualityStatus]).disabled = false;
+      element(bannerIds[item.qualityStatus]).hidden = false;
+
+      notes.value = "";
+      workflow.textContent = "Pending assessment";
+    }
+
+    function performAction(expectedStatus, successMessage) {
+      const item = cases[selector.value];
+
+      if (item.qualityStatus !== expectedStatus) {
+        workflow.textContent = "Action not permitted";
+        return;
+      }
+
+      if (expectedStatus !== "valid" && !notes.value.trim()) {
+        workflow.textContent = "Review notes required";
+        return;
+      }
+
+      workflow.textContent = successMessage;
+    }
+
+    element("accept-button").addEventListener("click", () => {
+      performAction("valid", "Governance decision accepted");
+    });
+
+    element("review-button").addEventListener("click", () => {
+      performAction("requires_review", "Script marked for review");
+    });
+
+    element("block-button").addEventListener("click", () => {
+      performAction("blocked", "Script execution blocked");
+    });
+
+    selector.addEventListener("change", () => {
+      displayCase(selector.value);
+    });
+
+    displayCase(selector.value);
+  </script>
+</body>
+</html>

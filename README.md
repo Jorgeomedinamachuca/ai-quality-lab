@@ -65,6 +65,7 @@ AI Quality Lab is organised around several practical research areas:
 | 014 | Hot-Path Latency and Deferred Attribution Guardrail | Validates fast user-facing workflow behaviour, deferred attribution recovery, retryable failures and blocked states when attribution evidence is missing. | Pytest, JSON, Playwright, TypeScript, Async Workflow QA |
 | 015 | Cache Isolation and Freshness Guardrail | Validates cache key isolation, freshness, stale data risk, fallback behaviour, audit evidence and blocked states for unsafe cached enrichment data. | Pytest, JSON, Playwright, TypeScript, Cache QA |
 | 016 | Configuration-Driven Behaviour Guardrail | Validates feature flag consistency, configuration drift, environment isolation, fail-safe defaults and configuration quality decisions. | Pytest, JSON, Playwright, TypeScript, Configuration QA |
+| 017 | Third-Party Script Governance Guardrail | Validates script authorisation, source allowlisting, integrity evidence, environment isolation and risk-based execution decisions. | Pytest, JSON, Playwright, TypeScript, Software Supply Chain Security |
 
 ---
 
@@ -505,6 +506,43 @@ It combines declarative Python/Pytest validation with a TypeScript/Playwright br
 - 232 Python/Pytest tests passing across the lab
 - 52 TypeScript/Playwright tests passing locally
 
+
+## Experiment 017 — Third-Party Script Governance Guardrail
+
+Experiment 017 validates synthetic third-party script governance decisions using risk-based quality gates.
+
+It evaluates script authorisation, source allowlisting, integrity verification, environment isolation, audit evidence and fail-safe execution decisions.
+
+The experiment combines Python/Pytest dataset validation with TypeScript/Playwright browser workflow tests.
+
+### Quality focus
+
+- Third-party script authorisation
+- Source allowlisting
+- Integrity verification
+- Environment isolation
+- Audit evidence and provenance
+- Fail-safe execution decisions
+- Risk-based review and blocking
+- Software supply chain assurance
+
+### Related files
+
+- `data/third_party_script_cases.json`
+- `rubrics/third_party_script_governance_rubric.md`
+- `tests/test_third_party_script_governance.py`
+- `demo/third_party_script_dashboard.html`
+- `tests-ts/third-party-script-dashboard.spec.ts`
+- `docs/experiment_017_third_party_script_governance_guardrail.md`
+
+### Validation
+
+- 31 Python/Pytest tests for Experiment 017
+- 11 TypeScript/Playwright tests for Experiment 017
+- 263 Python/Pytest tests passing locally across the lab
+- 63 TypeScript/Playwright tests passing locally across the lab
+
+The scenarios and browser workflow are synthetic. No external scripts are executed.
 
 
 ---
